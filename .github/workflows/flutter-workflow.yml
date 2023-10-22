@@ -1,0 +1,37 @@
+name: Flutter CI
+
+on:
+  push:
+    branches:
+      - master
+      
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-java@v2
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+          cache: 'gradle'
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.13.6'
+          channel: 'stable'
+      - run: flutter pub get
+      - run: flutter test
+      - run: flutter build apk
+      - uses: actions/upload-artifact@v1
+        with:
+          name: release-apk
+          path: build/app/outputs/flutter-apk/app-release.apk
+      - name: Release
+        uses: xresloader/upload-to-github-release@v1.3.12
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          file: "build/app/outputs/flutter-apk/app-release.apk"
+          overwrite: true
+          draft: false
+          update_latest_release: true

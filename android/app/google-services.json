@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "773031169627",
+    "firebase_url": "https://biketogether-ids-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "biketogether-ids",
+    "storage_bucket": "biketogether-ids.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:773031169627:android:1b0609c415baf405e8b97e",
+        "android_client_info": {
+          "package_name": "com.example.biketogether"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "773031169627-amm8c3gv66vahuhveiv0flqh06oetjv1.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.biketogether",
+            "certificate_hash": "62061d70ccb34890426f000b7aec947d0211667c"
+          }
+        },
+        {
+          "client_id": "773031169627-lju929sp75fb48oc92kiiiao08c2o7qf.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCoWH8WaMo5zcA88S1gLCX7vWhdakoVINk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "773031169627-lju929sp75fb48oc92kiiiao08c2o7qf.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "773031169627-h699pn9vkoei235vo9ki343ikulg2vfc.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.biketogether"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

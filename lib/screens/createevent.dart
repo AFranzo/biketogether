@@ -1,52 +1,61 @@
 import 'package:biketogether/modules/bikePath.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 
 class CreateEvent extends StatefulWidget {
+  const CreateEvent({super.key});
+
   @override
   State<StatefulWidget> createState() => _createEventState();
 }
 
 class _createEventState extends State<CreateEvent> {
-  late Future<List<BikePath>> bikepaths;
-
-  String _selectedPath='';
+  String _selectedPath = '';
 
   @override
   void initState() {
     super.initState();
-    bikepaths = Future.value(BikePath.getAllBikePaths());
   }
 
   @override
   Widget build(BuildContext context) {
-//TODO race condition, la lista viene fetchata dopo che il dropdown sia costruito
     return Scaffold(
       appBar: AppBar(
         title: const Text('Create Event'),
       ),
       body: Column(
         children: [
-          FutureBuilder<List<BikePath>>(
-            future: bikepaths,
+          FutureBuilder(
+            future: FirebaseDatabase.instance.ref().child('percorsi').once(),
             builder: (context, snapshot) {
+              final allSelections = <DropdownMenuItem>[];
               if (snapshot.hasData) {
+                final allPaths = Map<String, dynamic>.from(
+                    (snapshot.data!.snapshot.value as Map));
+                allSelections.addAll(allPaths.values.map((e) {
+                  final path = BikePath.fromDB(Map<String, dynamic>.from(e));
+                  return DropdownMenuItem(
+                    value: path.name,
+                    child: Row(
+                      children: [
+                        Icon(path.type == 'roadbike'
+                            ? Icons.electric_bike
+                            : Icons.pedal_bike),
+                        const SizedBox(
+                          width: 10,
+                        ), // lul just for padding
+                        Text(path.name),
+                      ],
+                    ),
+                  );
+                }));
                 return DropdownButtonFormField(
-                  value: _selectedPath,
-                  items: snapshot.data
-                      ?.map((e) => DropdownMenuItem(
-                            value: e.name,
-                            child: Text(e.name),
-                          ))
-                      .toList(),
-                  onChanged: (e) => {
-                    print('changing'+e!),
-                    setState(() {
-                      _selectedPath = e;
-                    })
-                  },
-                );
+                    items: allSelections,
+                    onChanged: (e) {
+                      _selectedPath = e.toString();
+                    });
               } else {
-                return const Text("Cannot retrieve events");
+                return const CircularProgressIndicator();
               }
             },
           )

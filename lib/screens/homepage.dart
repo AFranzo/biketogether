@@ -1,6 +1,9 @@
 /* homepage con searchbar e lista eventi */
 import 'package:biketogether/modules/bikeEvent.dart';
 import 'package:biketogether/screens/createevent.dart';
+import 'package:biketogether/screens/event.dart';
+import 'package:firebase_database/firebase_database.dart';
+
 import 'package:flutter/material.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -22,20 +25,13 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  late Future<List<BikeEvent>> allevents;
-
   //late Future<List<bikeEvent>> joinedevents;
 
   @override
-  void initState() {
-    allevents = BikeEvent.getAllBikeEvents();
-  }
+  void initState() {}
 
   Future<void> _refreshEvents() async {
-    List<BikeEvent> newevents = await BikeEvent.getAllBikeEvents();
-      setState(() {
-      allevents = Future.value(newevents);
-    });
+    setState(() {});
   }
 
   @override
@@ -46,6 +42,7 @@ class _MyHomePageState extends State<MyHomePage> {
     // The Flutter framework has been optimized to make rerunning build methods
     // fast, so that you can just rebuild anything that needs updating rather
     // than having to individually change instances of widgets.
+    _refreshEvents(); // maybe fix but is called everytime we rebuilt -> not optimal
     return Scaffold(
       appBar: AppBar(
         // TRY THIS: Try changing the color here to a specific color (to
@@ -56,67 +53,92 @@ class _MyHomePageState extends State<MyHomePage> {
         // the App.build method, and use it to set our appbar title.
         title: Text(widget.title),
       ),
-      body: RefreshIndicator(
-        onRefresh: _refreshEvents,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Text('Public events'),
-            Expanded(
-              child: FutureBuilder<List<BikeEvent>>(
-                future: allevents,
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    return ListView.builder(
-                        scrollDirection: Axis.vertical,
-                        shrinkWrap: true,
-                        padding: const EdgeInsets.all(8),
-                        itemCount: snapshot.data!.length,
-                        itemBuilder: (context, index) {
-                          return Card(
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(20)),
-                              margin: const EdgeInsets.all(8),
-                              clipBehavior: Clip.hardEdge,
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  ListTile(
-                                    leading: const Icon(Icons.pedal_bike),
-                                    title: const Text('name'), //TODO to change to some name per event, TBD
-                                    subtitle: Text(
-                                        'Created by ${snapshot.data!.elementAt(index).creator.toString()} | Date ${snapshot.data!.elementAt(index).date.toString().substring(0,10)}'),
-                                  )
-                                ],
-                              ));
-                        });
-                  } else if (snapshot.hasError) {
-                    return Text("Error while fetching events\n ${snapshot.error}");
-                  } else {
-                    return const Text('No Public Events');
-                  }
-                },
-              ),
-            )
-          ],
-        ),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Text('Public events'),
+          StreamBuilder(
+            builder: (context, snapshot) {
+              final cardList = <Card>[];
+              if (snapshot.hasData) {
+                final allEvents = Map<String, dynamic>.from(
+                    snapshot.data!.snapshot.value as Map);
+                cardList.addAll(allEvents.values.map((e) {
+                  final event = BikeEvent.fromDB(Map<String, dynamic>.from(e));
+                  return Card(
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20)),
+                      margin: const EdgeInsets.all(8),
+                      clipBehavior: Clip.hardEdge,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          ListTile(
+                            leading: const Icon(Icons.pedal_bike),
+                            title: const Text('name'),
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                      // TODO try a way to retrieve the eventID (you can iterate per item instead of per value)
+                                          EventPage(eventname: '-Ni9ltgU9z-Csr5JG-Gi')));
+                            },
+                            //TODO to change to some name per event, TBD
+                            subtitle: Text(
+                                'Created by ${event.creator} | Date ${event.date.toString().substring(0, 10)}'),
+                          )
+                        ],
+                      ));
+                }));
+                return Expanded(
+                    child: ListView(
+                  children: cardList,
+                ));
+              } else if (snapshot.hasError) {
+                return Text("Error while fetching events\n ${snapshot.error}");
+              } else {
+                return const Text('No Public Events');
+              }
+            },
+            stream:
+                FirebaseDatabase.instance.ref().child('eventi_creati').onValue,
+          )
+        ],
       ),
       drawer: Drawer(
-        child: ListView(
+        child: Column(
           children: [
-            ListTile(
-              title: const Text('Create Event'),
-              onTap: () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => CreateEvent()));
-              },
+            Expanded(
+              child: ListView(
+                children: [
+                  ListTile(
+                    leading: const Icon(Icons.add_circle),
+                    title: const Text('Create Event'),
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const CreateEvent()));
+                    },
+                  ),
+                ],
+              ),
             ),
-            ListTile(
-              title: const Text('Logout'),
-              onTap: () {
-                BikeEvent.insertEvent(BikeEvent(creator: 'Franz', date: DateTime.parse('2023-10-20'), bikeRouteName: 'aaaaad',createAt: DateTime.now()));
-                //TODO firebase logout
-              },
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: ListTile(
+                leading: const Icon(Icons.logout),
+                title: const Text('Logout'),
+                onTap: () {
+                  // BikeEvent.insertEvent(BikeEvent(
+                  //     creator: 'Franz',
+                  //     date: DateTime.parse('2023-10-20'),
+                  //     bikeRouteName: 'aaaaad',
+                  //     createAt: DateTime.now()));
+                  //TODO firebase logout
+                },
+              ),
             )
           ],
         ),

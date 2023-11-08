@@ -7,7 +7,7 @@ import 'package:flutter/widgets.dart';
 class BikePath {
   final String name;
   final String type;
-  final Uri url;
+  final Uri url; // TODO da vedere come gestire gli eventuali link
 
   BikePath(this.name, this.url, this.type);
 

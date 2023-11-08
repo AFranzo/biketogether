@@ -1,7 +1,8 @@
+import 'package:biketogether/modules/bikeEvent.dart';
 import 'package:biketogether/modules/bikePath.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-
+import 'package:flutter/cupertino.dart';
 class CreateEvent extends StatefulWidget {
   const CreateEvent({super.key});
 
@@ -11,6 +12,8 @@ class CreateEvent extends StatefulWidget {
 
 class _createEventState extends State<CreateEvent> {
   String _selectedPath = '';
+  final _form = GlobalKey<FormState>();
+  Map<String, dynamic> formFields = {};
 
   @override
   void initState() {
@@ -23,43 +26,94 @@ class _createEventState extends State<CreateEvent> {
       appBar: AppBar(
         title: const Text('Create Event'),
       ),
-      body: Column(
-        children: [
-          FutureBuilder(
-            future: FirebaseDatabase.instance.ref().child('percorsi').once(),
-            builder: (context, snapshot) {
-              final allSelections = <DropdownMenuItem>[];
-              if (snapshot.hasData) {
-                final allPaths = Map<String, dynamic>.from(
-                    (snapshot.data!.snapshot.value as Map));
-                allSelections.addAll(allPaths.values.map((e) {
-                  final path = BikePath.fromDB(Map<String, dynamic>.from(e));
-                  return DropdownMenuItem(
-                    value: path.name,
-                    child: Row(
+      body: Form(
+        key: _form,
+        child: Column(
+          children: [
+            FutureBuilder(
+              future: FirebaseDatabase.instance.ref().child('percorsi').once(),
+              builder: (context, snapshot) {
+                final allSelections = <DropdownMenuItem>[];
+                if (snapshot.hasData) {
+                  final allPaths = Map<String, dynamic>.from(
+                      (snapshot.data!.snapshot.value as Map));
+                  allSelections.addAll(allPaths.values.map((e) {
+                    final path = BikePath.fromDB(Map<String, dynamic>.from(e));
+                    return DropdownMenuItem(
+                      value: path.name,
+                      child: Row(
+                        children: [
+                          Icon(path.type == 'roadbike'
+                              ? Icons.electric_bike
+                              : Icons.pedal_bike),
+                          const SizedBox(
+                            width: 10,
+                          ), // lul just for padding
+                          Text(path.name),
+                        ],
+                      ),
+                    );
+                  }));
+                  return DropdownButtonFormField(
+                      items: allSelections,
+                      onChanged: (e) {
+                        _selectedPath = e.toString();
+                        formFields.update('bikepath', (value) => _selectedPath,
+                            ifAbsent: () => _selectedPath);
+                      });
+                } else {
+                  return const Center(
+                    child: Column(
                       children: [
-                        Icon(path.type == 'roadbike'
-                            ? Icons.electric_bike
-                            : Icons.pedal_bike),
-                        const SizedBox(
-                          width: 10,
-                        ), // lul just for padding
-                        Text(path.name),
+                        CircularProgressIndicator(),
                       ],
                     ),
                   );
-                }));
-                return DropdownButtonFormField(
-                    items: allSelections,
-                    onChanged: (e) {
-                      _selectedPath = e.toString();
-                    });
-              } else {
-                return const CircularProgressIndicator();
-              }
-            },
-          )
-        ],
+                }
+              },
+            ),
+            TextFormField(
+              validator: (value) {
+                formFields.update('event_name', (e) => value,
+                    ifAbsent: () => value);
+              },
+              decoration: const InputDecoration(
+                  border: UnderlineInputBorder(), labelText: 'Event name'),
+            ),
+            SizedBox(
+              height: 200,
+              child: CupertinoDatePicker(
+                mode: CupertinoDatePickerMode.dateAndTime,
+                initialDateTime: DateTime.now(),
+                onDateTimeChanged: (DateTime newDateTime) {
+                  formFields.update('date',(value)=>newDateTime.millisecondsSinceEpoch,ifAbsent: ()=>newDateTime.millisecondsSinceEpoch);
+                },
+                use24hFormat: true,
+                minuteInterval: 1,
+              ),
+            ),
+            Padding(
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                child: ElevatedButton(
+                  onPressed: () {
+                    // Validate returns true if the form is valid, or false otherwise.
+                    if (_form.currentState!.validate()) {
+                      // If the form is valid, display a snackbar. In the real world,
+                      // you'd often call a server or save the information in a database.
+                      // TODO check for null inputs
+                      // TODO change creator to user
+                      BikeEvent.insertEvent(BikeEvent(creator: 'Franz', date: DateTime.fromMillisecondsSinceEpoch(formFields['date']), bikeRouteName: formFields['bikepath'], createAt:DateTime.now()));
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                            content: Text(
+                                'Creating Event')), // TODO check if event is created maybe and report success
+                      );
+                    }
+                  },
+                  child: const Text('Submit'),
+                ))
+          ],
+        ),
       ),
     );
   }

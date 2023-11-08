@@ -63,8 +63,8 @@ class _MyHomePageState extends State<MyHomePage> {
               if (snapshot.hasData) {
                 final allEvents = Map<String, dynamic>.from(
                     snapshot.data!.snapshot.value as Map);
-                cardList.addAll(allEvents.values.map((e) {
-                  final event = BikeEvent.fromDB(Map<String, dynamic>.from(e));
+                cardList.addAll(allEvents.entries.map((e){
+                  final event = BikeEvent.fromDB(Map<String,dynamic>.from(e.value));
                   return Card(
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(20)),
@@ -81,10 +81,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) =>
-                                      // TODO try a way to retrieve the eventID (you can iterate per item instead of per value)
-                                          EventPage(eventname: '-Ni9ltgU9z-Csr5JG-Gi')));
+                                      EventPage(eventname: e.key.toString())));
                             },
-                            //TODO to change to some name per event, TBD
                             subtitle: Text(
                                 'Created by ${event.creator} | Date ${event.date.toString().substring(0, 10)}'),
                           )

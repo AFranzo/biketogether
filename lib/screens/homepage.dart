@@ -3,7 +3,6 @@ import 'package:biketogether/modules/bikeEvent.dart';
 import 'package:biketogether/screens/createevent.dart';
 import 'package:biketogether/screens/event.dart';
 import 'package:firebase_database/firebase_database.dart';
-
 import 'package:flutter/material.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -25,14 +24,8 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  //late Future<List<bikeEvent>> joinedevents;
-
   @override
   void initState() {}
-
-  Future<void> _refreshEvents() async {
-    setState(() {});
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +35,6 @@ class _MyHomePageState extends State<MyHomePage> {
     // The Flutter framework has been optimized to make rerunning build methods
     // fast, so that you can just rebuild anything that needs updating rather
     // than having to individually change instances of widgets.
-    _refreshEvents(); // maybe fix but is called everytime we rebuilt -> not optimal
     return Scaffold(
       appBar: AppBar(
         // TRY THIS: Try changing the color here to a specific color (to
@@ -63,8 +55,9 @@ class _MyHomePageState extends State<MyHomePage> {
               if (snapshot.hasData) {
                 final allEvents = Map<String, dynamic>.from(
                     snapshot.data!.snapshot.value as Map);
-                cardList.addAll(allEvents.entries.map((e){
-                  final event = BikeEvent.fromDB(Map<String,dynamic>.from(e.value));
+                cardList.addAll(allEvents.entries.map((e) {
+                  final event =
+                      BikeEvent.fromDB(Map<String, dynamic>.from(e.value));
                   return Card(
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(20)),
@@ -75,13 +68,13 @@ class _MyHomePageState extends State<MyHomePage> {
                         children: [
                           ListTile(
                             leading: const Icon(Icons.pedal_bike),
-                            title: const Text('name'),
+                            title: Text(e.key.toString()),
                             onTap: () {
                               Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) =>
-                                      EventPage(eventname: e.key.toString())));
+                                      builder: (context) => EventPage(
+                                          eventname: e.key.toString())));
                             },
                             subtitle: Text(
                                 'Created by ${event.creator} | Date ${event.date.toString().substring(0, 10)}'),
@@ -94,12 +87,14 @@ class _MyHomePageState extends State<MyHomePage> {
                   children: cardList,
                 ));
               } else if (snapshot.hasError) {
-                return Text("Error while fetching events\n ${snapshot.error}");
+                return Center(
+                    child: Text(
+                        "Error while fetching events\n ${snapshot.error}"));
               } else {
-                return const Text('No Public Events');
+                return const Center(child: CircularProgressIndicator());
               }
             },
-            stream:
+            stream: // TODO vengono fetchati in modo ordinato ma non mappati nello stesso ordine, maybe utilize onChild...
                 FirebaseDatabase.instance.ref().child('eventi_creati').onValue,
           )
         ],

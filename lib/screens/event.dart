@@ -26,25 +26,47 @@ class _EventPageState extends State<EventPage> {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     return Scaffold(
       appBar: AppBar(
         title: Text(eventName),
       ),
-      body: FutureBuilder(
-        future: FirebaseDatabase.instance
-            .ref()
-            .child('eventi_creati/$eventName')
-            .once(),
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            final event = BikeEvent.fromDB(Map<String, dynamic>.from(
-                snapshot.data!.snapshot.value as Map));
-            return Text('${event.creator} create at ${event.createAt}');
-          } else {
-            return const Text('No data about the event');
-          }
-        },
+      body: Column(
+        children: [
+          FutureBuilder(
+            future: FirebaseDatabase.instance
+                .ref()
+                .child('eventi_creati/$eventName')
+                .once(),
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                final event = BikeEvent.fromDB(Map<String, dynamic>.from(
+                    snapshot.data!.snapshot.value as Map));
+                return Column(
+                  children: [
+                    Text('${event.creator} create at ${event.createAt}'),
+                    FutureBuilder(
+                        future: FirebaseDatabase.instance
+                            .ref()
+                            .child('percorsi/${event.bikeRouteName}')
+                            .once(),
+                        builder: (context, snapshot) {
+                          if (snapshot.hasData) {
+                            final bikepathinfo = BikePath.fromDB(
+                                Map<String, dynamic>.from(
+                                    snapshot.data!.snapshot.value as Map));
+                            return Text(
+                                '${bikepathinfo.name} | ${bikepathinfo.type} | ${bikepathinfo.url} ');
+                          }
+                          return const CircularProgressIndicator();
+                        })
+                  ],
+                );
+              } else {
+                return const Text('No data about the event');
+              }
+            },
+          ),
+        ],
       ),
     );
   }

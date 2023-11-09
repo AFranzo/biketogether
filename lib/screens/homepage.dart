@@ -68,7 +68,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         children: [
                           ListTile(
                             leading: const Icon(Icons.pedal_bike),
-                            title: Text(e.key.toString()),
+                            title: Text( event.name),
                             onTap: () {
                               Navigator.push(
                                   context,

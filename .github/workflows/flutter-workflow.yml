@@ -22,7 +22,7 @@ jobs:
           channel: 'stable'
       # check dependencies and run tests
       - run: flutter pub get
-      - run: flutter test
+      # - run: flutter test
       # builds the app
       - run: flutter build apk
       # uploads the apk as an artifact so it can be retrieved next

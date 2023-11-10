@@ -48,7 +48,6 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           TextField(
 
@@ -63,6 +62,9 @@ class _MyHomePageState extends State<MyHomePage> {
             builder: (context, snapshot) {
               final cardList = <Card>[];
               if (snapshot.hasData) {
+                if(!snapshot.data!.snapshot.exists){
+                  return const Text('Nessun evento è ancora stato creato ');
+                }
                 final allEvents = Map<String, dynamic>.from(
                     snapshot.data!.snapshot.value as Map);
                 cardList.addAll(allEvents.entries

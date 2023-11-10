@@ -9,25 +9,25 @@ class BikeEvent {
   final DateTime date;
   final String bikeRouteName;
   final DateTime createAt;
-
+  final String name;
 
   BikeEvent(
       {required this.creator,
       required this.date,
       required this.bikeRouteName,
       required this.createAt,
-});
+      required this.name});
 
   /*
   * Insert a bike event
   * */
   static void insertEvent(BikeEvent b) {
     FirebaseDatabase.instance.ref('eventi_creati').push().set({
-
       'creator': b.creator,
       'createdAt': b.createAt.millisecondsSinceEpoch,
       'bikepath': b.bikeRouteName,
-      'date': b.date.millisecondsSinceEpoch
+      'date': b.date.millisecondsSinceEpoch,
+      'name' : b.name
     });
   }
 
@@ -36,6 +36,7 @@ class BikeEvent {
         creator: data['creator'] ?? 'creator',
         date: DateTime.fromMillisecondsSinceEpoch(data['date']),
         bikeRouteName: data['bikepath'] ?? 'bikepath',
-        createAt: DateTime.fromMillisecondsSinceEpoch(data['createdAt']));
+        createAt: DateTime.fromMillisecondsSinceEpoch(data['createdAt']),
+        name: data['name'] ?? 'event name');
   }
 }

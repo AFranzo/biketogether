@@ -15,7 +15,6 @@ class _createEventState extends State<CreateEvent> {
   String _selectedPath = '';
   final _form = GlobalKey<FormState>();
   Map<String, dynamic> formFields = {};
-
   @override
   void initState() {
     super.initState();
@@ -62,6 +61,7 @@ class _createEventState extends State<CreateEvent> {
                       );
                     }));
                     return DropdownButtonFormField(
+                      validator:  (value) => value == null ? 'Seleziona un percorso' : null,
                         items: allSelections,
                         onChanged: (e) {
                           _selectedPath = e.toString();
@@ -110,22 +110,19 @@ class _createEventState extends State<CreateEvent> {
                       // Validate returns true if the form is valid, or false otherwise.
                       if (_form.currentState!.validate()) {
                         // If the form is valid, display a snackbar. In the real world,
-                        // you'd often call a server or save the information in a database.
-                        // TODO check for null inputs
-                        // TODO change creator to user
+                        // you'd often call a server or save the information in a database
                         BikeEvent.insertEvent(BikeEvent(
-                            creator: 'Franz',
+                            creator: 'Franz',// TODO change creator to user
                             date: DateTime.fromMillisecondsSinceEpoch(
-                                formFields['date']),
+                                formFields['date']??DateTime.now().millisecondsSinceEpoch ) ,
                             bikeRouteName: formFields['bikepath'],
                             createAt: DateTime.now(),
-                            name: formFields['event_name'] ??
-                                'Evento di ')); // TODO da defaultare con username
+                            name: formFields['event_name']==''?'Evento di':formFields['event_name'] ?? 'Evento di' )); // TODO da defaultare con username
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
                               backgroundColor: Colors.green,
                               content: Text(
-                                  'Creating Event')), // TODO check if event is created maybe and report success
+                                  'Evento Creato')), // TODO check if event is created maybe and report success
                         );
                       }
                     },

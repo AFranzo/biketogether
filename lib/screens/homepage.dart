@@ -24,6 +24,8 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  String searchedEventname = '';
+
   @override
   void initState() {}
 
@@ -48,6 +50,14 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
+          TextField(
+
+              decoration: const InputDecoration(
+                  labelText: 'Ricerca Evento', suffixIcon: Icon(Icons.search)),
+              onChanged: (e) {
+                searchedEventname = e;
+                setState(() {});
+              }),
           const Text('Public events'),
           StreamBuilder(
             builder: (context, snapshot) {
@@ -55,7 +65,11 @@ class _MyHomePageState extends State<MyHomePage> {
               if (snapshot.hasData) {
                 final allEvents = Map<String, dynamic>.from(
                     snapshot.data!.snapshot.value as Map);
-                cardList.addAll(allEvents.entries.map((e) {
+                cardList.addAll(allEvents.entries
+                    .where((element) => element.value['name']
+                        .toString()
+                        .contains(searchedEventname))
+                    .map((e) {
                   final event =
                       BikeEvent.fromDB(Map<String, dynamic>.from(e.value));
                   return Card(
@@ -68,7 +82,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         children: [
                           ListTile(
                             leading: const Icon(Icons.pedal_bike),
-                            title: Text( event.name),
+                            title: Text(event.name),
                             onTap: () {
                               Navigator.push(
                                   context,

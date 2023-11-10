@@ -119,10 +119,11 @@ class _createEventState extends State<CreateEvent> {
                                 formFields['date']),
                             bikeRouteName: formFields['bikepath'],
                             createAt: DateTime.now(),
-                            name: formFields['event_name'] ?? 'Evento di ')); // TODO da defaultare con username
+                            name: formFields['event_name'] ??
+                                'Evento di ')); // TODO da defaultare con username
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
-                            backgroundColor: Colors.green,
+                              backgroundColor: Colors.green,
                               content: Text(
                                   'Creating Event')), // TODO check if event is created maybe and report success
                         );

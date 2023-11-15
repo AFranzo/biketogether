@@ -84,6 +84,7 @@ class _createEventState extends State<CreateEvent> {
                 validator: (value) {
                   formFields.update('event_name', (e) => value,
                       ifAbsent: () => value);
+                  return null;
                 },
                 decoration: const InputDecoration(
                     border: UnderlineInputBorder(),

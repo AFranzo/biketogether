@@ -1,5 +1,3 @@
-import 'package:firebase_database/firebase_database.dart';
-import 'package:flutter/widgets.dart';
 
 /*
 * Class that represent a bike path

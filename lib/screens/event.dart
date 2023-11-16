@@ -5,7 +5,6 @@ import 'package:biketogether/modules/bikeEvent.dart';
 import 'package:biketogether/modules/bikePath.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 
 class EventPage extends StatefulWidget {
   const EventPage({super.key, required this.eventname});

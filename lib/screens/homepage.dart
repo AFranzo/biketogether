@@ -7,9 +7,10 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 
 import '../main.dart';
+import 'login.dart';
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title, required this.user});
+  const MyHomePage({super.key, required this.title});
 
   // This widget is the home page of your application. It is stateful, meaning
   // that it has a State object (defined below) that contains fields that affect
@@ -21,7 +22,6 @@ class MyHomePage extends StatefulWidget {
   // always marked "final".
 
   final String title;
-  final User user;
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
@@ -132,7 +132,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => CreateEvent(user : widget.user)));
+                              builder: (context) => CreateEvent()));
                     },
                   ),
                 ],

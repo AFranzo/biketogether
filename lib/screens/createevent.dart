@@ -6,9 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 
 class CreateEvent extends StatefulWidget {
-  const CreateEvent({super.key, required this.user});
+  const CreateEvent({super.key});
 
-  final User user;
   @override
   State<StatefulWidget> createState() => _createEventState();
 }
@@ -140,12 +139,12 @@ class _createEventState extends State<CreateEvent> {
                         // If the form is valid, display a snackbar. In the real world,
                         // you'd often call a server or save the information in a database
                         BikeEvent.insertEvent(BikeEvent(
-                            creator: widget.user.displayName.toString(),// TODO change creator to user
+                            creator: FirebaseAuth.instance.currentUser!.displayName.toString(),// TODO change creator to user
                             date: DateTime.fromMillisecondsSinceEpoch(
                                 formFields['date']??DateTime.now().millisecondsSinceEpoch ) ,
                             bikeRouteName: formFields['bikepath'],
                             createAt: DateTime.now(),
-                            name: 'Evento di${widget.user.displayName}' )); // TODO da defaultare con username
+                            name: FirebaseAuth.instance.currentUser!.displayName.toString()! )); // TODO da defaultare con username
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
                               backgroundColor: Colors.green,

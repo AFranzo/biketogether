@@ -22,6 +22,7 @@ class MyHomePage extends StatefulWidget {
   // always marked "final".
 
   final String title;
+
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
@@ -53,7 +54,6 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Column(
         children: [
           TextField(
-
               decoration: const InputDecoration(
                   labelText: 'Ricerca Evento', suffixIcon: Icon(Icons.search)),
               onChanged: (e) {
@@ -65,8 +65,7 @@ class _MyHomePageState extends State<MyHomePage> {
             builder: (context, snapshot) {
               final cardList = <Card>[];
               if (snapshot.hasData) {
-
-                if(!snapshot.data!.snapshot.exists){
+                if (!snapshot.data!.snapshot.exists) {
                   return const Text('Nessun evento è ancora stato creato ');
                 }
                 final allEvents = Map<String, dynamic>.from(
@@ -97,7 +96,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                           eventname: e.key.toString())));
                             },
                             subtitle: Text(
-                                'Created by ${event.creator} | Date ${event.date.toString().substring(0, 10)}'),
+                                'Created by ${event.creatorName} | Date ${event.date.toString().substring(0, 10)}'),
                           )
                         ],
                       ));

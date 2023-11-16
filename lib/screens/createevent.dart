@@ -17,28 +17,29 @@ class _createEventState extends State<CreateEvent> {
   final _form = GlobalKey<FormState>();
   Map<String, dynamic> formFields = {};
   final TextEditingController _dateController = TextEditingController();
+
   @override
   void initState() {
     super.initState();
-    _dateController.text="";
+    _dateController.text = "";
   }
 
-  Future<void> _selectDate() async{
+  Future<void> _selectDate() async {
     DateTime? _picked = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
       firstDate: DateTime(2000),
       lastDate: DateTime(2101),
     );
-    if(_picked != null){
+    if (_picked != null) {
       setState(() {
         _dateController.text = _picked.toString().split(" ")[0];
-        formFields.update(
-            'date', (value) => _picked.millisecondsSinceEpoch,
+        formFields.update('date', (value) => _picked.millisecondsSinceEpoch,
             ifAbsent: () => _picked.millisecondsSinceEpoch);
       });
     }
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -80,7 +81,8 @@ class _createEventState extends State<CreateEvent> {
                       );
                     }));
                     return DropdownButtonFormField(
-                      validator:  (value) => value == null ? 'Seleziona un percorso' : null,
+                        validator: (value) =>
+                            value == null ? 'Seleziona un percorso' : null,
                         items: allSelections,
                         onChanged: (e) {
                           _selectedPath = e.toString();
@@ -109,27 +111,28 @@ class _createEventState extends State<CreateEvent> {
                     border: UnderlineInputBorder(),
                     labelText: 'Nome dell\'evento'),
               ),
-               SizedBox(
-                child: Padding(padding: const EdgeInsets.all(30),
-                child: TextField(
+              SizedBox(
+                child: Padding(
+                  padding: const EdgeInsets.all(30),
+                  child: TextField(
                     controller: _dateController,
-                  decoration: const InputDecoration(labelText: 'DATE',
-                    filled: true,
-                    prefixIcon: Icon(
-                        Icons.calendar_today
+                    decoration: const InputDecoration(
+                      labelText: 'DATE',
+                      filled: true,
+                      prefixIcon: Icon(Icons.calendar_today),
+                      enabledBorder:
+                          OutlineInputBorder(borderSide: BorderSide.none),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.blue),
+                      ),
                     ),
-                    enabledBorder: OutlineInputBorder(borderSide: BorderSide.none),
-                    focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.blue),
-                    ),
-                ),
-                  readOnly: true,
-                  onTap: (){
+                    readOnly: true,
+                    onTap: () {
                       _selectDate();
-                  },
-                ),
+                    },
+                  ),
                 ),
               ),
-
               Padding(
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   child: ElevatedButton(
@@ -139,19 +142,26 @@ class _createEventState extends State<CreateEvent> {
                         // If the form is valid, display a snackbar. In the real world,
                         // you'd often call a server or save the information in a database
                         BikeEvent.insertEvent(BikeEvent(
-                            creator: FirebaseAuth.instance.currentUser!.displayName.toString(),// TODO change creator to user
+                            creatorId: FirebaseAuth.instance.currentUser!.uid,
+                            // TODO change creator to user
                             date: DateTime.fromMillisecondsSinceEpoch(
-                                formFields['date']??DateTime.now().millisecondsSinceEpoch ) ,
+                                formFields['date'] ??
+                                    DateTime.now().millisecondsSinceEpoch),
                             bikeRouteName: formFields['bikepath'],
                             createAt: DateTime.now(),
-                            name: FirebaseAuth.instance.currentUser!.displayName.toString()! )); // TODO da defaultare con username
+                            name: formFields['event_name'] == ''
+                                ? 'Evento di ${FirebaseAuth.instance.currentUser!.displayName.toString()}'
+                                : formFields['event_name'] ??
+                                    'Evento di ${FirebaseAuth.instance.currentUser!.displayName.toString()}',
+                            creatorName: FirebaseAuth
+                                .instance.currentUser!.displayName
+                                .toString())); // TODO da defaultare con username
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
                               backgroundColor: Colors.green,
                               content: Text(
                                   'Evento Creato')), // TODO check if event is created maybe and report success
                         );
-
                       }
                     },
                     child: const Text('Submit'),

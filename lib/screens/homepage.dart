@@ -2,8 +2,12 @@
 import 'package:biketogether/modules/bikeEvent.dart';
 import 'package:biketogether/screens/createevent.dart';
 import 'package:biketogether/screens/event.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+
+import '../main.dart';
+import 'login.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
@@ -50,7 +54,6 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Column(
         children: [
           TextField(
-
               decoration: const InputDecoration(
                   labelText: 'Ricerca Evento', suffixIcon: Icon(Icons.search)),
               onChanged: (e) {
@@ -62,7 +65,7 @@ class _MyHomePageState extends State<MyHomePage> {
             builder: (context, snapshot) {
               final cardList = <Card>[];
               if (snapshot.hasData) {
-                if(!snapshot.data!.snapshot.exists){
+                if (!snapshot.data!.snapshot.exists) {
                   return const Text('Nessun evento è ancora stato creato ');
                 }
                 final allEvents = Map<String, dynamic>.from(
@@ -93,7 +96,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                           eventname: e.key.toString())));
                             },
                             subtitle: Text(
-                                'Created by ${event.creator} | Date ${event.date.toString().substring(0, 10)}'),
+                                'Created by ${event.creatorName} | Date ${event.date.toString().substring(0, 10)}'),
                           )
                         ],
                       ));
@@ -128,7 +131,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => const CreateEvent()));
+                              builder: (context) => CreateEvent()));
                     },
                   ),
                 ],
@@ -139,13 +142,12 @@ class _MyHomePageState extends State<MyHomePage> {
               child: ListTile(
                 leading: const Icon(Icons.logout),
                 title: const Text('Logout'),
-                onTap: () {
-                  // BikeEvent.insertEvent(BikeEvent(
-                  //     creator: 'Franz',
-                  //     date: DateTime.parse('2023-10-20'),
-                  //     bikeRouteName: 'aaaaad',
-                  //     createAt: DateTime.now()));
-                  //TODO firebase logout
+                onTap: () async {
+                  await Authentication.signOut(context: context);
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const SignInPage()));
                 },
               ),
             )

@@ -1,5 +1,6 @@
 import 'package:biketogether/modules/bikeEvent.dart';
 import 'package:biketogether/modules/bikePath.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
@@ -15,9 +16,28 @@ class _createEventState extends State<CreateEvent> {
   String _selectedPath = '';
   final _form = GlobalKey<FormState>();
   Map<String, dynamic> formFields = {};
+  final TextEditingController _dateController = TextEditingController();
+
   @override
   void initState() {
     super.initState();
+    _dateController.text = "";
+  }
+
+  Future<void> _selectDate() async {
+    DateTime? _picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2101),
+    );
+    if (_picked != null) {
+      setState(() {
+        _dateController.text = _picked.toString().split(" ")[0];
+        formFields.update('date', (value) => _picked.millisecondsSinceEpoch,
+            ifAbsent: () => _picked.millisecondsSinceEpoch);
+      });
+    }
   }
 
   @override
@@ -61,7 +81,8 @@ class _createEventState extends State<CreateEvent> {
                       );
                     }));
                     return DropdownButtonFormField(
-                      validator:  (value) => value == null ? 'Seleziona un percorso' : null,
+                        validator: (value) =>
+                            value == null ? 'Seleziona un percorso' : null,
                         items: allSelections,
                         onChanged: (e) {
                           _selectedPath = e.toString();
@@ -91,17 +112,25 @@ class _createEventState extends State<CreateEvent> {
                     labelText: 'Nome dell\'evento'),
               ),
               SizedBox(
-                height: 200,
-                child: CupertinoDatePicker(
-                  mode: CupertinoDatePickerMode.dateAndTime,
-                  initialDateTime: DateTime.now(),
-                  onDateTimeChanged: (DateTime newDateTime) {
-                    formFields.update(
-                        'date', (value) => newDateTime.millisecondsSinceEpoch,
-                        ifAbsent: () => newDateTime.millisecondsSinceEpoch);
-                  },
-                  use24hFormat: true,
-                  minuteInterval: 1,
+                child: Padding(
+                  padding: const EdgeInsets.all(30),
+                  child: TextField(
+                    controller: _dateController,
+                    decoration: const InputDecoration(
+                      labelText: 'DATE',
+                      filled: true,
+                      prefixIcon: Icon(Icons.calendar_today),
+                      enabledBorder:
+                          OutlineInputBorder(borderSide: BorderSide.none),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.blue),
+                      ),
+                    ),
+                    readOnly: true,
+                    onTap: () {
+                      _selectDate();
+                    },
+                  ),
                 ),
               ),
               Padding(
@@ -113,12 +142,20 @@ class _createEventState extends State<CreateEvent> {
                         // If the form is valid, display a snackbar. In the real world,
                         // you'd often call a server or save the information in a database
                         BikeEvent.insertEvent(BikeEvent(
-                            creator: 'Franz',// TODO change creator to user
+                            creatorId: FirebaseAuth.instance.currentUser!.uid,
+                            // TODO change creator to user
                             date: DateTime.fromMillisecondsSinceEpoch(
-                                formFields['date']??DateTime.now().millisecondsSinceEpoch ) ,
+                                formFields['date'] ??
+                                    DateTime.now().millisecondsSinceEpoch),
                             bikeRouteName: formFields['bikepath'],
                             createAt: DateTime.now(),
-                            name: formFields['event_name']==''?'Evento di':formFields['event_name'] ?? 'Evento di' )); // TODO da defaultare con username
+                            name: formFields['event_name'] == ''
+                                ? 'Evento di ${FirebaseAuth.instance.currentUser!.displayName.toString()}'
+                                : formFields['event_name'] ??
+                                    'Evento di ${FirebaseAuth.instance.currentUser!.displayName.toString()}',
+                            creatorName: FirebaseAuth
+                                .instance.currentUser!.displayName
+                                .toString())); // TODO da defaultare con username
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
                               backgroundColor: Colors.green,

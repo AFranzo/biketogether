@@ -10,6 +10,7 @@ class BikeEvent {
   final String bikeRouteName;
   final DateTime createAt;
   final String name;
+  final List<String> partecipants;
 
   BikeEvent(
       {required this.creatorName,
@@ -17,7 +18,8 @@ class BikeEvent {
       required this.date,
       required this.bikeRouteName,
       required this.createAt,
-      required this.name});
+      required this.name,
+      required this.partecipants});
 
   /*
   * Insert a bike event
@@ -34,12 +36,21 @@ class BikeEvent {
   }
 
   factory BikeEvent.fromDB(Map<String, dynamic> data) {
+
+    List<String> parts = [];
+    if ( data['partecipants'] != null) {
+      Map part_map = data['partecipants'] as Map;
+      part_map.forEach((key, value) {
+        Map part = value as Map;
+        part.forEach((key, value) { parts.add(value);});
+      });
+    }
     return BikeEvent(
         creatorName: data['creatorName'] ?? 'creator',
         creatorId: data['creatorId'] ?? 'creatorId',
         date: DateTime.fromMillisecondsSinceEpoch(data['date']),
         bikeRouteName: data['bikepath'] ?? 'bikepath',
         createAt: DateTime.fromMillisecondsSinceEpoch(data['createdAt']),
-        name: data['name'] ?? 'event name');
+        name: data['name'] ?? 'event name', partecipants: parts );
   }
 }

@@ -3,6 +3,7 @@
 
 import 'package:biketogether/modules/bikeEvent.dart';
 import 'package:biketogether/modules/bikePath.dart';
+import 'package:biketogether/screens/map.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 
@@ -43,26 +44,57 @@ class _EventPageState extends State<EventPage> {
                 ],
               ),
             ),
-            body: Column(
-              children: [
-                Text('${event.creatorName} create at ${event.createAt}'),
-                FutureBuilder(
-                    future: FirebaseDatabase.instance
-                        .ref()
-                        .child('percorsi/${event.bikeRouteName}')
-                        .once(),
-                    builder: (context, snapshot) {
-                      if (snapshot.hasData) {
-                        final bikepathinfo = BikePath.fromDB(
-                            Map<String, dynamic>.from(
-                                snapshot.data!.snapshot.value as Map));
-                        return Text(
-                            '${bikepathinfo.name} | ${bikepathinfo.type} | ${bikepathinfo.url} ');
-                      }
-                      return const CircularProgressIndicator();
-                    })
-              ],
-            ),
+            body: FittedBox(
+                fit: BoxFit.fitWidth,
+                child: Column(
+                  children: [
+                    Text('creato da ${event.creatorName} il ${event.createAt}'),
+                    Text('data evento: ${event.date}'),
+                    Text('numero partecipanti: ?'),
+                    FutureBuilder(
+                        future: FirebaseDatabase.instance
+                            .ref()
+                            .child('percorsi/${event.bikeRouteName}')
+                            .once(),
+                        builder: (context, snapshot) {
+                          if (snapshot.hasData) {
+                            final bikepathinfo = BikePath.fromDB(
+                                Map<String, dynamic>.from(
+                                    snapshot.data!.snapshot.value as Map));
+                            return Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text('luogo: ${bikepathinfo.name}'),
+                                  Text('tipo: ${bikepathinfo.type}'),
+                                  Text(
+                                      'informazioni aggiuntive: ${bikepathinfo.url}'),
+                                ]);
+                          }
+                          return const CircularProgressIndicator();
+                        }),
+                    ElevatedButton(
+                      onPressed: () {},
+                      child: const Text('CHAT'),
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => OSMap()),
+                        );
+                      },
+                      child: const Text('SEE ON MAP'),
+                    ),
+                    ElevatedButton(
+                      onPressed: () {},
+                      child: const Text('JOIN'),
+                    ),
+                    ElevatedButton(
+                      onPressed: () {},
+                      child: const Text('LEAVE'),
+                    ),
+                  ],
+                )),
           );
         } else {
           return const Text('No data about the event');

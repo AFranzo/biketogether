@@ -3,6 +3,7 @@
 
 import 'package:biketogether/modules/bikeEvent.dart';
 import 'package:biketogether/modules/bikePath.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 
@@ -41,6 +42,30 @@ class _EventPageState extends State<EventPage> {
                   children: [
                     Text(event.name),
                     const Spacer(),
+                    (!event.partecipants
+                            .contains(FirebaseAuth.instance.currentUser!.uid))
+                        ? IconButton(
+                            onPressed: () {
+                              FirebaseDatabase.instance
+                                  .ref('/eventi_creati/$eventID/')
+                                  .child('partecipants')
+                                  .push()
+                                  .set({
+                                'uid': FirebaseAuth.instance.currentUser!.uid
+                              });
+                            },
+                            icon: const Icon(Icons.add))
+                        : IconButton(
+                            onPressed: () {
+                              FirebaseDatabase.instance
+                                  .ref('/eventi_creati/$eventID/partecipants/')
+                                  .orderByChild('uid')
+                                  .equalTo(
+                                      FirebaseAuth.instance.currentUser!.uid)
+                                  .ref
+                                  .remove();
+                            },
+                            icon: const  Icon(Icons.remove)),
                   ],
                 ),
               ),

@@ -164,7 +164,7 @@ class _createEventState extends State<CreateEvent> {
                         );
                       }
                     },
-                    child: const Text('Submit'),
+                    child: const Text('Submit'), // TODO switch to homepage after submit
                   ))
             ],
           ),

@@ -12,62 +12,71 @@ class EventPage extends StatefulWidget {
   final String eventname;
 
   @override
-  State<StatefulWidget> createState() => _EventPageState(eventName: eventname);
+  State<StatefulWidget> createState() => _EventPageState(eventID: eventname);
 }
 
 class _EventPageState extends State<EventPage> {
-  final String eventName;
+  final String eventID;
 
-  _EventPageState({required this.eventName});
+  _EventPageState({required this.eventID});
 
   @override
   void initState() {}
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: FirebaseDatabase.instance
-          .ref()
-          .child('eventi_creati/$eventName')
-          .once(),
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          final event = BikeEvent.fromDB(
-              Map<String, dynamic>.from(snapshot.data!.snapshot.value as Map));
-          return Scaffold(
-            appBar: AppBar(
-              backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-              title: Row(
+    return StreamBuilder(
+        stream: FirebaseDatabase.instance
+            .ref()
+            .child('eventi_creati/$eventID')
+            .onValue,
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            final event = BikeEvent.fromDB(Map<String, dynamic>.from(
+                snapshot.data!.snapshot.value as Map));
+            return Scaffold(
+              appBar: AppBar(
+                backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+                title: Row(
+                  children: [
+                    Text(event.name),
+                    const Spacer(),
+                  ],
+                ),
+              ),
+              body: Column(
                 children: [
-                  Text(event.name),
+                  Text('${event.creatorName} create at ${event.createAt}'),
+                  FutureBuilder(
+                      future: FirebaseDatabase.instance
+                          .ref()
+                          .child('percorsi/${event.bikeRouteName}')
+                          .once(),
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
+                          final bikepathinfo = BikePath.fromDB(
+                              Map<String, dynamic>.from(
+                                  snapshot.data!.snapshot.value as Map));
+                          return Text(
+                              '${bikepathinfo.name} | ${bikepathinfo.type} | ${bikepathinfo.url} ');
+                        }
+                        return const CircularProgressIndicator();
+                      })
                 ],
               ),
-            ),
-            body: Column(
-              children: [
-                Text('${event.creatorName} create at ${event.createAt}'),
-                FutureBuilder(
-                    future: FirebaseDatabase.instance
-                        .ref()
-                        .child('percorsi/${event.bikeRouteName}')
-                        .once(),
-                    builder: (context, snapshot) {
-                      if (snapshot.hasData) {
-                        final bikepathinfo = BikePath.fromDB(
-                            Map<String, dynamic>.from(
-                                snapshot.data!.snapshot.value as Map));
-                        return Text(
-                            '${bikepathinfo.name} | ${bikepathinfo.type} | ${bikepathinfo.url} ');
-                      }
-                      return const CircularProgressIndicator();
-                    })
-              ],
-            ),
-          );
-        } else {
-          return const Text('No data about the event');
-        }
-      },
-    );
+            );
+          } else {
+            return Scaffold(
+              appBar: AppBar(
+                title: const Text('Loading'),
+              ),
+              body: const Center(
+                child:  Column(
+                  children: [CircularProgressIndicator()],
+                ),
+              ),
+            );
+          }
+        });
   }
 }

@@ -18,6 +18,8 @@ class EventPage extends StatefulWidget {
 
 class _EventPageState extends State<EventPage> {
   final String eventID;
+  final _form = GlobalKey<FormState>();
+  Map<String, dynamic> formFields = {};
 
   _EventPageState({required this.eventID});
 
@@ -66,6 +68,59 @@ class _EventPageState extends State<EventPage> {
                                   .remove();
                             },
                             icon: const  Icon(Icons.remove)),
+                    (event.creatorId == FirebaseAuth.instance.currentUser!.uid)
+                        ? IconButton(
+                        onPressed: () => {
+                          showDialog<void>(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: const Text('Modifica Evento'),
+                                  content: Form(
+                                    key: _form,
+                                    child: TextFormField(
+                                        decoration: const InputDecoration(
+                                            border:
+                                            UnderlineInputBorder(),
+                                            labelText:
+                                            'Nome dell\'evento'),
+                                        initialValue: event.name,
+                                        validator: (value) {
+                                          if (value == null ||
+                                              value == '') {
+                                            return "Nome non può essere nullo";
+                                          }
+                                          formFields.update(
+                                              'event_name',
+                                                  (e) => value,
+                                              ifAbsent: () => value);
+                                        }),
+                                  ),
+                                  actions: [
+                                    ElevatedButton(
+                                        onPressed: () => {
+                                          if (_form.currentState!
+                                              .validate())
+                                            {
+                                              FirebaseDatabase
+                                                  .instance
+                                                  .ref(
+                                                  '/eventi_creati/$eventID/')
+                                                  .update({
+                                                'name': formFields[
+                                                'event_name']
+                                              }),
+                                              Navigator.of(context)
+                                                  .pop()
+                                            }
+                                        },
+                                        child: const Text('Salva'))
+                                  ],
+                                );
+                              })
+                        },
+                        icon: const Icon(Icons.settings))
+                        : Container()
                   ],
                 ),
               ),

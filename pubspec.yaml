@@ -39,8 +39,6 @@ dependencies:
   firebase_auth: ^4.12.1
   google_sign_in: ^6.1.6
 
-  flutter_osm_plugin: ^0.70.2
-
 dev_dependencies:
   flutter_test:
     sdk: flutter

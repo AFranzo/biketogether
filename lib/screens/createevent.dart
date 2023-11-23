@@ -69,9 +69,10 @@ class _createEventState extends State<CreateEvent> {
                         value: path.name,
                         child: Row(
                           children: [
-                            Icon(path.type == 'roadbike'
-                                ? Icons.electric_bike
-                                : Icons.pedal_bike),
+                            Icon(
+                                path.type == 'roadbike' //TODO find better icons
+                                    ? Icons.electric_bike
+                                    : Icons.pedal_bike),
                             const SizedBox(
                               width: 10,
                             ), // lul just for padding
@@ -117,7 +118,7 @@ class _createEventState extends State<CreateEvent> {
                   child: TextField(
                     controller: _dateController,
                     decoration: const InputDecoration(
-                      labelText: 'DATE',
+                      labelText: 'Data Evento',
                       filled: true,
                       prefixIcon: Icon(Icons.calendar_today),
                       enabledBorder:
@@ -155,7 +156,7 @@ class _createEventState extends State<CreateEvent> {
                                     'Evento di ${FirebaseAuth.instance.currentUser!.displayName.toString()}',
                             creatorName: FirebaseAuth
                                 .instance.currentUser!.displayName
-                                .toString())); // TODO da defaultare con username
+                                .toString(), partecipants: [])); // TODO da defaultare con username
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
                               backgroundColor: Colors.green,

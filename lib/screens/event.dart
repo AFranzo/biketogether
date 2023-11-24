@@ -125,20 +125,34 @@ class _EventPageState extends State<EventPage> {
               body: Column(
                 children: [
                   Text('${event.creatorName} created at ${event.createAt}'),
-                  Text('numero partecipanti: ${event.partecipants}'), // TODO convert to number
+                  Text('numero partecipanti: ${event.partecipants.length}'),
                   FutureBuilder(
-                      // TODO: problema qui
                       future: FirebaseDatabase.instance
                           .ref()
                           .child('routes/${event.bikeRouteName}')
                           .once(),
                       builder: (context, snapshot) {
                         if (snapshot.hasData) {
-                          final bikeRouteInfo = BikeRoute.fromDB(
+                          final route = BikeRoute.fromDB(
                               Map<String, dynamic>.from(
                                   snapshot.data!.snapshot.value as Map));
-                          return Text(
-                              '${bikeRouteInfo.name} | ${bikeRouteInfo.type} | ${bikeRouteInfo.link} ');
+                          return Column(
+                            children: [
+                              Text('advice: ${route.name}'),
+                              Text('area: ${route.area}'),
+                              Text('difficulty: ${route.difficulty}'),
+                              Text('duration: ${route.duration} h'),
+                              Text('lenght: ${route.lenght} km'),
+                              Text('link: ${route.link}'),
+                              Text('name: ${route.name}'),
+                              Text('arrival point: ${route.pointArrival}'),
+                              Text('starting point: ${route.pointStart}'),
+                              Text('synthesis: ${route.synthesis}'),
+                              Text('type: ${route.type}'),
+                              Card(child: Text('description: ${route.description}'))
+                              
+                            ],
+                          );
                         }
                         return const CircularProgressIndicator();
                       })

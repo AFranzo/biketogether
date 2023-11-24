@@ -1,8 +1,8 @@
 /* Screen of the event page with join/leave, chat and event's info */
 // inb4 this might just be a stateless widget
 
-import 'package:biketogether/modules/bikeEvent.dart';
-import 'package:biketogether/modules/bikePath.dart';
+import 'package:biketogether/modules/bike_event.dart';
+import 'package:biketogether/modules/bike_route.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
@@ -29,10 +29,8 @@ class _EventPageState extends State<EventPage> {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
-        stream: FirebaseDatabase.instance
-            .ref()
-            .child('eventi_creati/$eventID')
-            .onValue,
+        stream:
+            FirebaseDatabase.instance.ref().child('events/$eventID').onValue,
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             final event = BikeEvent.fromDB(Map<String, dynamic>.from(
@@ -49,7 +47,7 @@ class _EventPageState extends State<EventPage> {
                         ? IconButton(
                             onPressed: () {
                               FirebaseDatabase.instance
-                                  .ref('/eventi_creati/$eventID/')
+                                  .ref('/events/$eventID/')
                                   .child('partecipants')
                                   .push()
                                   .set({
@@ -60,85 +58,86 @@ class _EventPageState extends State<EventPage> {
                         : IconButton(
                             onPressed: () {
                               FirebaseDatabase.instance
-                                  .ref('/eventi_creati/$eventID/partecipants/')
+                                  .ref('/events/$eventID/partecipants/')
                                   .orderByChild('uid')
                                   .equalTo(
                                       FirebaseAuth.instance.currentUser!.uid)
                                   .ref
                                   .remove();
                             },
-                            icon: const  Icon(Icons.remove)),
+                            icon: const Icon(Icons.remove)),
                     (event.creatorId == FirebaseAuth.instance.currentUser!.uid)
                         ? IconButton(
-                        onPressed: () => {
-                          showDialog<void>(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return AlertDialog(
-                                  title: const Text('Modifica Evento'),
-                                  content: Form(
-                                    key: _form,
-                                    child: TextFormField(
-                                        decoration: const InputDecoration(
-                                            border:
-                                            UnderlineInputBorder(),
-                                            labelText:
-                                            'Nome dell\'evento'),
-                                        initialValue: event.name,
-                                        validator: (value) {
-                                          if (value == null ||
-                                              value == '') {
-                                            return "Nome non può essere nullo";
-                                          }
-                                          formFields.update(
-                                              'event_name',
-                                                  (e) => value,
-                                              ifAbsent: () => value);
-                                        }),
-                                  ),
-                                  actions: [
-                                    ElevatedButton(
-                                        onPressed: () => {
-                                          if (_form.currentState!
-                                              .validate())
-                                            {
-                                              FirebaseDatabase
-                                                  .instance
-                                                  .ref(
-                                                  '/eventi_creati/$eventID/')
-                                                  .update({
-                                                'name': formFields[
-                                                'event_name']
-                                              }),
-                                              Navigator.of(context)
-                                                  .pop()
-                                            }
-                                        },
-                                        child: const Text('Salva'))
-                                  ],
-                                );
-                              })
-                        },
-                        icon: const Icon(Icons.settings))
+                            onPressed: () => {
+                                  showDialog<void>(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return AlertDialog(
+                                          title: const Text('Modifica Evento'),
+                                          content: Form(
+                                            key: _form,
+                                            child: TextFormField(
+                                                decoration: const InputDecoration(
+                                                    border:
+                                                        UnderlineInputBorder(),
+                                                    labelText:
+                                                        'Nome dell\'evento'),
+                                                initialValue: event.name,
+                                                validator: (value) {
+                                                  if (value == null ||
+                                                      value == '') {
+                                                    return "Nome non può essere nullo";
+                                                  }
+                                                  formFields.update(
+                                                      'event_name',
+                                                      (e) => value,
+                                                      ifAbsent: () => value);
+                                                }),
+                                          ),
+                                          actions: [
+                                            ElevatedButton(
+                                                onPressed: () => {
+                                                      if (_form.currentState!
+                                                          .validate())
+                                                        {
+                                                          FirebaseDatabase
+                                                              .instance
+                                                              .ref(
+                                                                  '/events/$eventID/')
+                                                              .update({
+                                                            'name': formFields[
+                                                                'event_name']
+                                                          }),
+                                                          Navigator.of(context)
+                                                              .pop()
+                                                        }
+                                                    },
+                                                child: const Text('Salva'))
+                                          ],
+                                        );
+                                      })
+                                },
+                            icon: const Icon(Icons.settings))
                         : Container()
                   ],
                 ),
               ),
               body: Column(
                 children: [
-                  Text('${event.creatorName} create at ${event.createAt}'),
+                  Text('${event.creatorName} created at ${event.createAt}'),
                   FutureBuilder(
+                      // TODO: problema qui
                       future: FirebaseDatabase.instance
                           .ref()
-                          .child('percorsi/${event.bikeRouteName}')
+                          .child('routes/${event.bikeRouteName}')
                           .once(),
                       builder: (context, snapshot) {
                         if (snapshot.hasData) {
-                          final bikepathinfo = BikePath.fromDB(
+                          final bikeRouteInfo = BikeRoute.fromDB(
                               Map<String, dynamic>.from(
                                   snapshot.data!.snapshot.value as Map));
                           return Text(
-                              '${bikepathinfo.name} | ${bikepathinfo.type} | ${bikepathinfo.url} ');
+                              '${bikeRouteInfo.name} | ${bikeRouteInfo.type} | ${bikeRouteInfo.link} ');
                         }
                         return const CircularProgressIndicator();
                       })
@@ -151,7 +150,7 @@ class _EventPageState extends State<EventPage> {
                 title: const Text('Loading'),
               ),
               body: const Center(
-                child:  Column(
+                child: Column(
                   children: [CircularProgressIndicator()],
                 ),
               ),

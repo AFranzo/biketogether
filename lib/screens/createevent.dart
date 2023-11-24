@@ -1,5 +1,5 @@
-import 'package:biketogether/modules/bikeEvent.dart';
-import 'package:biketogether/modules/bikePath.dart';
+import 'package:biketogether/modules/bike_event.dart';
+import 'package:biketogether/modules/bike_route.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
@@ -64,7 +64,7 @@ class _createEventState extends State<CreateEvent> {
                         (snapshot.data!.snapshot.value as Map));
                     allSelections.addAll(allPaths.values.map((e) {
                       final path =
-                          BikePath.fromDB(Map<String, dynamic>.from(e));
+                          BikeRoute.fromDB(Map<String, dynamic>.from(e));
                       return DropdownMenuItem(
                         value: path.name,
                         child: Row(

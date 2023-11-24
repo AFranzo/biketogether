@@ -1,6 +1,8 @@
 /*
 * Class that represent a bike path
 * */
+import 'dart:ffi';
+
 class BikeRoute {
   final String advice;
   final String area;
@@ -16,32 +18,32 @@ class BikeRoute {
   final String type;
 
   BikeRoute(
-      this.advice,
-      this.area,
-      this.description,
-      this.difficulty,
-      this.duration,
-      this.lenght,
-      this.link,
-      this.name,
-      this.pointArrival,
-      this.pointStart,
-      this.synthesis,
-      this.type);
+      {required this.advice,
+      required this.area,
+      required this.description,
+      required this.difficulty,
+      required this.duration,
+      required this.lenght,
+      required this.link,
+      required this.name,
+      required this.pointArrival,
+      required this.pointStart,
+      required this.synthesis,
+      required this.type});
 
   factory BikeRoute.fromDB(Map<String, dynamic> data) {
     return BikeRoute(
-        data['advice'],
-        data['area'],
-        data['description'],
-        data['difficulty'],
-        data['duration'],
-        data['lenght'],
-        Uri(path: data['link']),
-        data['name'],
-        data['pointArrival'],
-        data['pointStart'],
-        data['synthesis'],
-        data['type']);
+        advice:data['advice'],
+        area:data['area'],
+        description:data['description'],
+        difficulty:data['difficulty'],
+        duration:   double.parse(data['duration'].toString()),
+        lenght: int.parse(data['lenght'].toString()),
+        link:Uri(path: data['link']),
+        name: data['name'],
+        pointArrival:data['pointArrival'],
+        pointStart:data['pointStart'],
+        synthesis:data['synthesis'],
+        type:data['type']);
   }
 }

@@ -56,7 +56,7 @@ class _createEventState extends State<CreateEvent> {
               const Text('Seleziona il tipo di percosro'),
               FutureBuilder(
                 future:
-                    FirebaseDatabase.instance.ref().child('percorsi').once(),
+                    FirebaseDatabase.instance.ref().child('routes').once(),
                 builder: (context, snapshot) {
                   final allSelections = <DropdownMenuItem>[];
                   if (snapshot.hasData) {

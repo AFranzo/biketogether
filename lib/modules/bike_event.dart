@@ -25,32 +25,34 @@ class BikeEvent {
   * Insert a bike event
   * */
   static void insertEvent(BikeEvent b) {
-    FirebaseDatabase.instance.ref('eventi_creati').push().set({
+    FirebaseDatabase.instance.ref('events').push().set({
       'creatorName': b.creatorName,
       'creatorId': b.creatorId,
       'createdAt': b.createAt.millisecondsSinceEpoch,
-      'bikepath': b.bikeRouteName,
+      'route': b.bikeRouteName,
       'date': b.date.millisecondsSinceEpoch,
       'name': b.name
     });
   }
 
   factory BikeEvent.fromDB(Map<String, dynamic> data) {
-
     List<String> parts = [];
-    if ( data['partecipants'] != null) {
-      Map part_map = data['partecipants'] as Map;
-      part_map.forEach((key, value) {
+    if (data['partecipants'] != null) {
+      Map partMap = data['partecipants'] as Map;
+      partMap.forEach((key, value) {
         Map part = value as Map;
-        part.forEach((key, value) { parts.add(value);});
+        part.forEach((key, value) {
+          parts.add(value);
+        });
       });
     }
     return BikeEvent(
         creatorName: data['creatorName'] ?? 'creator',
         creatorId: data['creatorId'] ?? 'creatorId',
         date: DateTime.fromMillisecondsSinceEpoch(data['date']),
-        bikeRouteName: data['bikepath'] ?? 'bikepath',
+        bikeRouteName: data['route'] ?? 'route',
         createAt: DateTime.fromMillisecondsSinceEpoch(data['createdAt']),
-        name: data['name'] ?? 'event name', partecipants: parts );
+        name: data['name'] ?? 'name',
+        partecipants: parts);
   }
 }

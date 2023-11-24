@@ -1,5 +1,5 @@
 /* homepage con searchbar e lista eventi */
-import 'package:biketogether/modules/bikeEvent.dart';
+import 'package:biketogether/modules/bike_event.dart';
 import 'package:biketogether/screens/createevent.dart';
 import 'package:biketogether/screens/event.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -60,13 +60,14 @@ class _MyHomePageState extends State<MyHomePage> {
                 searchedEventname = e;
                 setState(() {});
               }),
-          const Text('Public events'), // TODO fare lista apparte o sopra con eventi a cui sono già iscritto
+          const Text(
+              'Public events'), // TODO fare lista apparte o sopra con eventi a cui sono già iscritto
           StreamBuilder(
             builder: (context, snapshot) {
               final cardList = <Card>[];
               if (snapshot.hasData) {
                 if (!snapshot.data!.snapshot.exists) {
-                  return const Text('Nessun evento è ancora stato creato ');
+                  return const Text('Nessun evento è ancora stato creato');
                 }
                 final allEvents = Map<String, dynamic>.from(
                     snapshot.data!.snapshot.value as Map);
@@ -114,7 +115,7 @@ class _MyHomePageState extends State<MyHomePage> {
               }
             },
             stream: // TODO vengono fetchati in modo ordinato ma non mappati nello stesso ordine, maybe utilize onChild...
-                FirebaseDatabase.instance.ref().child('eventi_creati').onValue,
+                FirebaseDatabase.instance.ref().child('events').onValue,
           )
         ],
       ),

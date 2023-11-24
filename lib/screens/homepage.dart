@@ -60,7 +60,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 searchedEventname = e;
                 setState(() {});
               }),
-          const Text('Public events'),
+          const Text('Public events'), // TODO fare lista apparte o sopra con eventi a cui sono già iscritto
           StreamBuilder(
             builder: (context, snapshot) {
               final cardList = <Card>[];

@@ -125,6 +125,7 @@ class _EventPageState extends State<EventPage> {
               body: Column(
                 children: [
                   Text('${event.creatorName} created at ${event.createAt}'),
+                  Text('numero partecipanti: ${event.partecipants}'), // TODO convert to number
                   FutureBuilder(
                       // TODO: problema qui
                       future: FirebaseDatabase.instance

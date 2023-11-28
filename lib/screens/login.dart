@@ -1,3 +1,4 @@
+import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -38,21 +39,17 @@ class Authentication {
 
   static Future<FirebaseApp> initializeFirebase({
     required BuildContext context,
-  }) async {
+  }) async{
     FirebaseApp firebaseApp = await Firebase.initializeApp( options: DefaultFirebaseOptions.currentPlatform,);
-
-    User? user = FirebaseAuth.instance.currentUser;
-
-    if (user != null) {
+    if (FirebaseAuth.instance.currentUser != null) {
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(
           builder: (context) =>
-              MyHomePage(title : "biketogether"
+              const MyHomePage(title : "biketogether"
               ),
         ),
       );
     }
-
     return firebaseApp;
   }
 
@@ -154,11 +151,10 @@ class _GoogleSignInButtonState extends State<GoogleSignInButton> {
               Padding(
                 padding: EdgeInsets.only(left: 10),
                 child: Text(
-                  'Sign in with Google',
+                  'Effettua il Login con Google',
                   style: TextStyle(
                     fontSize: 20,
                     color: Colors.black54,
-                    fontWeight: FontWeight.w600,
                   ),
                 ),
               )
@@ -174,7 +170,7 @@ class _SignInScreenState extends State<SignInPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.orange,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.only(
@@ -182,47 +178,30 @@ class _SignInScreenState extends State<SignInPage> {
             right: 16.0,
             bottom: 20.0,
           ),
-          child: Column(
-            mainAxisSize: MainAxisSize.max,
-            children: [
-              const Row(),
-              const Expanded(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SizedBox(height: 20),
-                    Text(
-                      'FlutterFire',
-                      style: TextStyle(
-                        color: Colors.yellow,
-                        fontSize: 40,
-                      ),
-                    ),
-                    Text(
-                      'Authentication',
-                      style: TextStyle(
-                        color: Colors.orange,
-                        fontSize: 40,
-                      ),
-                    ),
-                  ],
-                ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              const SizedBox(width: 20.0, height: 100.0),
+              const Text(
+                'Be',
+                style: TextStyle(fontSize: 43.0),
               ),
-              FutureBuilder(
-                future: Authentication.initializeFirebase(context: context),
-                builder: (context, snapshot) {
-                  if (snapshot.hasError) {
-                    return const Text('Error initializing Firebase');
-                  } else if (snapshot.connectionState == ConnectionState.done) {
-                    return GoogleSignInButton();
-                  }
-                  return const CircularProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation<Color>(
-                      Colors.orange,
-                    ),
-                  );
-                },
+              const SizedBox(width: 20.0, height: 100.0),
+              DefaultTextStyle(
+                style: const TextStyle(
+                  fontSize: 40.0,
+                  fontFamily: 'Horizon',
+                ),
+                child: AnimatedTextKit(
+                  animatedTexts: [
+                    RotateAnimatedText('AWESOME'),
+                    RotateAnimatedText('OPTIMISTIC'),
+                    RotateAnimatedText('DIFFERENT'),
+                  ],
+                  onTap: () {
+                    print("Tap Event");
+                  },
+                ),
               ),
             ],
           ),
@@ -231,3 +210,46 @@ class _SignInScreenState extends State<SignInPage> {
     );
   }
 }
+
+/*Column(
+            children: [
+              const SizedBox(height: 30
+              ),
+              const Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                Text(
+                  'Biketogether',
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 40,
+                  ),
+                ),
+              ],
+              ),
+              Expanded(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+
+                    FutureBuilder(future: Authentication.initializeFirebase(context: context), builder: (context, snapshot) {
+                      if (snapshot.hasError) {
+                        return const Text('Error initializing Firebase');
+                      } else if (snapshot.connectionState == ConnectionState.done) {
+                        return GoogleSignInButton();
+                      }
+                      return const CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation<Color>(
+                          Colors.orange,
+                        ),
+                      );
+                    },),
+                  ],
+                ),
+              ),
+
+
+
+            ],
+          ),*/

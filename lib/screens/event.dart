@@ -126,6 +126,10 @@ class _EventPageState extends State<EventPage> {
                 children: [
                   Text('${event.creatorName} created at ${event.createAt}'),
                   Text('numero partecipanti: ${event.partecipants.length}'),
+                  event.description != ''
+                      ? Text('Descrizione: ${event.description}')
+                      : Container(),
+                  // doesn't show description if it's empty
                   FutureBuilder(
                       future: FirebaseDatabase.instance
                           .ref()
@@ -149,8 +153,9 @@ class _EventPageState extends State<EventPage> {
                               Text('starting point: ${route.pointStart}'),
                               Text('synthesis: ${route.synthesis}'),
                               Text('type: ${route.type}'),
-                              Card(child: Text('description: ${route.description}'))
-                              
+                              Card(
+                                  child:
+                                      Text('description: ${route.description}'))
                             ],
                           );
                         }

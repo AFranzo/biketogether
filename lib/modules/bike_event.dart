@@ -10,6 +10,7 @@ class BikeEvent {
   final String bikeRouteName;
   final DateTime createAt;
   final String name;
+  final String? description;
   final List<String> partecipants;
 
   BikeEvent(
@@ -19,6 +20,7 @@ class BikeEvent {
       required this.bikeRouteName,
       required this.createAt,
       required this.name,
+      required this.description,
       required this.partecipants});
 
   /*
@@ -31,7 +33,8 @@ class BikeEvent {
       'createdAt': b.createAt.millisecondsSinceEpoch,
       'route': b.bikeRouteName,
       'date': b.date.millisecondsSinceEpoch,
-      'name': b.name
+      'name': b.name,
+      'description': b.description
     });
   }
 
@@ -53,6 +56,7 @@ class BikeEvent {
         bikeRouteName: data['route'] ?? 'route',
         createAt: DateTime.fromMillisecondsSinceEpoch(data['createdAt']),
         name: data['name'] ?? 'name',
-        partecipants: parts);
+        partecipants: parts,
+        description: data['description'] ?? '');
   }
 }

@@ -149,6 +149,7 @@ class _createEventState extends State<CreateEvent> {
                                 formFields['date'] ??
                                     DateTime.now().millisecondsSinceEpoch),
                             bikeRouteName: formFields['bikepath'],
+                            description: 'description',
                             createAt: DateTime.now(),
                             name: formFields['event_name'] == ''
                                 ? 'Evento di ${FirebaseAuth.instance.currentUser!.displayName.toString()}'

@@ -126,6 +126,8 @@ class _EventPageState extends State<EventPage> {
                 children: [
                   Text('${event.creatorName} created at ${event.createAt}'),
                   Text('numero partecipanti: ${event.partecipants.length}'),
+                  Text('data evento: ${event.date}'),
+                  Text('descrizione evento: ${event.description}'),
                   FutureBuilder(
                       future: FirebaseDatabase.instance
                           .ref()
@@ -138,7 +140,7 @@ class _EventPageState extends State<EventPage> {
                                   snapshot.data!.snapshot.value as Map));
                           return Column(
                             children: [
-                              Text('advice: ${route.name}'),
+                              Text('advice: ${route.advice}'),
                               Text('area: ${route.area}'),
                               Text('difficulty: ${route.difficulty}'),
                               Text('duration: ${route.duration} h'),

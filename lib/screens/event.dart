@@ -159,91 +159,80 @@ class _EventPageState extends State<EventPage> {
                       Text('Descrizione evento: ${event.description}',
                           style: const TextStyle(fontSize: 22)),
                       const Padding(padding: EdgeInsets.only(bottom: 15.0)),
-                      SingleChildScrollView(
-                          // TODO: per qualche motivo non worka
-                          child: FutureBuilder(
-                              future: FirebaseDatabase.instance
-                                  .ref()
-                                  .child('routes/${event.bikeRouteName}')
-                                  .once(),
-                              builder: (context, snapshot) {
-                                if (snapshot.hasData) {
-                                  final route = BikeRoute.fromDB(
-                                      Map<String, dynamic>.from(snapshot
-                                          .data!.snapshot.value as Map));
-                                  return Column(
+                      FutureBuilder(
+                          future: FirebaseDatabase.instance
+                              .ref()
+                              .child('routes/${event.bikeRouteName}')
+                              .once(),
+                          builder: (context, snapshot) {
+                            if (snapshot.hasData) {
+                              final route = BikeRoute.fromDB(
+                                  Map<String, dynamic>.from(
+                                      snapshot.data!.snapshot.value as Map));
+                              return Column(
+                                  //TODO should use DraggableScrollableSheet class to make it work long
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text('Percorso: ${route.name}',
+                                        style: const TextStyle(fontSize: 28)),
+                                    Row(
                                       mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
+                                          MainAxisAlignment.spaceBetween,
                                       children: [
-                                        Text('Percorso: ${route.name}',
-                                            style:
-                                                const TextStyle(fontSize: 28)),
+                                        Text(route.difficulty,
+                                            style: const TextStyle(
+                                                fontSize: 24,
+                                                backgroundColor: (1 ==
+                                                        2) //TODO: sostituire con 'media' ..
+                                                    ? Colors.orangeAccent
+                                                    : (1 == 3)
+                                                        ? Colors.redAccent
+                                                        : Colors.greenAccent)),
                                         Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
                                           children: [
-                                            Text(route.difficulty,
+                                            Text('${route.lenght} km',
                                                 style: const TextStyle(
-                                                    fontSize: 24,
-                                                    backgroundColor: (1 ==
-                                                            2) //TODO: sostituire con 'media' ..
-                                                        ? Colors.orangeAccent
-                                                        : (1 == 3)
-                                                            ? Colors.redAccent
-                                                            : Colors
-                                                                .greenAccent)),
-                                            Row(
-                                              children: [
-                                                Text('${route.lenght} km',
-                                                    style: const TextStyle(
-                                                        fontSize: 24)),
-                                                const Icon(
-                                                  Icons.straighten,
-                                                  size: 24,
-                                                )
-                                              ],
-                                            ),
-                                            Row(
-                                              children: [
-                                                Text('${route.duration} h',
-                                                    style: const TextStyle(
-                                                        fontSize: 24)),
-                                                const Icon(
-                                                  Icons.schedule,
-                                                  size: 24,
-                                                ),
-                                              ],
+                                                    fontSize: 24)),
+                                            const Icon(
+                                              Icons.straighten,
+                                              size: 24,
                                             )
                                           ],
                                         ),
-                                        Text('Tipo: ${route.type}',
-                                            style:
-                                                const TextStyle(fontSize: 24)),
-                                        Text('Area: ${route.area}',
-                                            style:
-                                                const TextStyle(fontSize: 24)),
-                                        Text('da: ${route.pointStart}',
-                                            style:
-                                                const TextStyle(fontSize: 22)),
-                                        Text('a: ${route.pointArrival}',
-                                            style:
-                                                const TextStyle(fontSize: 22)),
-                                        const Text('Consigli:',
-                                            style: TextStyle(fontSize: 22)),
-                                        Text(route.advice,
-                                            style:
-                                                const TextStyle(fontSize: 16)),
-                                        const Text('Descrizione:',
-                                            style: TextStyle(fontSize: 22)),
-                                        Text(route.description,
-                                            style:
-                                                const TextStyle(fontSize: 10)),
-                                      ]);
-                                }
-                                return const CircularProgressIndicator();
-                              }))
+                                        Row(
+                                          children: [
+                                            Text('${route.duration} h',
+                                                style: const TextStyle(
+                                                    fontSize: 24)),
+                                            const Icon(
+                                              Icons.schedule,
+                                              size: 24,
+                                            ),
+                                          ],
+                                        )
+                                      ],
+                                    ),
+                                    Text('Tipo: ${route.type}',
+                                        style: const TextStyle(fontSize: 24)),
+                                    Text('Area: ${route.area}',
+                                        style: const TextStyle(fontSize: 24)),
+                                    Text('da: ${route.pointStart}',
+                                        style: const TextStyle(fontSize: 22)),
+                                    Text('a: ${route.pointArrival}',
+                                        style: const TextStyle(fontSize: 22)),
+                                    const Text('Consigli:',
+                                        style: TextStyle(fontSize: 22)),
+                                    Text(route.advice,
+                                        style: const TextStyle(fontSize: 16)),
+                                    const Text('Descrizione:',
+                                        style: TextStyle(fontSize: 22)),
+                                    Text(route.description,
+                                        style: const TextStyle(fontSize: 10)),
+                                  ]);
+                            }
+                            return const CircularProgressIndicator();
+                          })
                     ],
                   ),
                 ));

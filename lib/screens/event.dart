@@ -158,9 +158,9 @@ class _EventPageState extends State<EventPage> {
                       ),
                       const Text('Descrizione evento:',
                           style: TextStyle(fontSize: 22)),
-                      Text(event.description,
+                      Text(event.description ?? 'Nessuna descrizione',
                           style: const TextStyle(fontSize: 16)),
-                      
+                      Divider(),
                       const Padding(padding: EdgeInsets.only(bottom: 15.0)),
                       FutureBuilder(
                           future: FirebaseDatabase.instance

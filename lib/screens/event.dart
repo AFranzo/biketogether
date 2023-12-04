@@ -169,26 +169,34 @@ class _EventPageState extends State<EventPage> {
                               final route = BikeRoute.fromDB(
                                   Map<String, dynamic>.from(
                                       snapshot.data!.snapshot.value as Map));
-                              return Column(
-                                  //TODO should use DraggableScrollableSheet class to make it work long
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
+                              return Expanded(
+                                  child: ListView(
+                                      // mainAxisAlignment: MainAxisAlignment.start,
+                                      // crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
                                     Text('Percorso: ${route.name}',
                                         style: const TextStyle(fontSize: 28)),
                                     Row(
                                       mainAxisAlignment:
                                           MainAxisAlignment.spaceBetween,
                                       children: [
-                                        Text(route.difficulty,
-                                            style: const TextStyle(
-                                                fontSize: 24,
-                                                backgroundColor: (1 ==
-                                                        2) //TODO: sostituire con 'media' ..
-                                                    ? Colors.orangeAccent
-                                                    : (1 == 3)
-                                                        ? Colors.redAccent
-                                                        : Colors.greenAccent)),
+                                        (route.difficulty == 'facile')
+                                            ? Text(route.difficulty,
+                                                style: const TextStyle(
+                                                    fontSize: 24,
+                                                    backgroundColor:
+                                                        Colors.greenAccent))
+                                            : (route.difficulty == 'media')
+                                                ? Text(route.difficulty,
+                                                    style: const TextStyle(
+                                                        fontSize: 24,
+                                                        backgroundColor: Colors
+                                                            .orangeAccent))
+                                                : Text(route.difficulty,
+                                                    style: const TextStyle(
+                                                        fontSize: 24,
+                                                        backgroundColor:
+                                                            Colors.redAccent)),
                                         Row(
                                           children: [
                                             Text('${route.lenght} km',
@@ -213,6 +221,8 @@ class _EventPageState extends State<EventPage> {
                                         )
                                       ],
                                     ),
+                                    const Padding(
+                                        padding: EdgeInsets.only(bottom: 10.0)),
                                     Text('Tipo: ${route.type}',
                                         style: const TextStyle(fontSize: 24)),
                                     Text('Area: ${route.area}',
@@ -228,8 +238,18 @@ class _EventPageState extends State<EventPage> {
                                     const Text('Descrizione:',
                                         style: TextStyle(fontSize: 22)),
                                     Text(route.description,
-                                        style: const TextStyle(fontSize: 10)),
-                                  ]);
+                                        style: const TextStyle(fontSize: 16)),
+                                    const Row(
+                                      children: [
+                                        Text('Mappa\nPercorso',
+                                            style: TextStyle(fontSize: 22)),
+                                        Padding(
+                                            padding:
+                                                EdgeInsets.only(right: 10.0)),
+                                        Icon(Icons.download)
+                                      ],
+                                    ),
+                                  ]));
                             }
                             return const CircularProgressIndicator();
                           })

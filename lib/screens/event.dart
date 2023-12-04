@@ -40,8 +40,11 @@ class _EventPageState extends State<EventPage> {
                   backgroundColor: Theme.of(context).colorScheme.inversePrimary,
                   title: Row(
                     children: [
-                      Text(event.name),
-                      const Spacer(),
+                      Expanded(
+                          child: Text(
+                        event.name,
+                        overflow: TextOverflow.fade,
+                      )),
                       (!event.partecipants
                               .contains(FirebaseAuth.instance.currentUser!.uid))
                           ? IconButton(
@@ -68,60 +71,67 @@ class _EventPageState extends State<EventPage> {
                               icon: const Icon(Icons.remove)),
                       (event.creatorId ==
                               FirebaseAuth.instance.currentUser!.uid)
-                          ? IconButton(
-                              onPressed: () => {
-                                    showDialog<void>(
-                                        context: context,
-                                        builder: (BuildContext context) {
-                                          return AlertDialog(
-                                            title:
-                                                const Text('Modifica Evento'),
-                                            content: Form(
-                                              key: _form,
-                                              child: TextFormField(
-                                                  decoration: const InputDecoration(
-                                                      border:
-                                                          UnderlineInputBorder(),
-                                                      labelText:
-                                                          'Nome dell\'evento'),
-                                                  initialValue: event.name,
-                                                  validator: (value) {
-                                                    if (value == null ||
-                                                        value == '') {
-                                                      return "Nome non può essere nullo";
-                                                    }
-                                                    formFields.update(
-                                                        'event_name',
-                                                        (e) => value,
-                                                        ifAbsent: () => value);
-                                                  }),
-                                            ),
-                                            actions: [
-                                              ElevatedButton(
-                                                  onPressed: () => {
-                                                        if (_form.currentState!
-                                                            .validate())
-                                                          {
-                                                            FirebaseDatabase
-                                                                .instance
-                                                                .ref(
-                                                                    '/events/$eventID/')
-                                                                .update({
-                                                              'name': formFields[
-                                                                  'event_name']
-                                                            }),
-                                                            Navigator.of(
-                                                                    context)
-                                                                .pop()
-                                                          }
-                                                      },
-                                                  child: const Text('Salva'))
-                                            ],
-                                          );
-                                        })
-                                  },
-                              icon: const Icon(Icons.settings))
-                          : Container()
+                          ? PopupMenuButton(
+                              itemBuilder: (context) => [
+                                    PopupMenuItem(
+                                      child: Text('Modifica'),
+                                      onTap: () {
+                                        showDialog<void>(
+                                            context: context,
+                                            builder: (BuildContext context) {
+                                              return AlertDialog(
+                                                title: const Text(
+                                                    'Modifica Evento'),
+                                                content: Form(
+                                                  key: _form,
+                                                  child: TextFormField(
+                                                      decoration: const InputDecoration(
+                                                          border:
+                                                              UnderlineInputBorder(),
+                                                          labelText:
+                                                              'Nome dell\'evento'),
+                                                      initialValue: event.name,
+                                                      validator: (value) {
+                                                        if (value == null ||
+                                                            value == '') {
+                                                          return "Nome non può essere nullo";
+                                                        }
+                                                        formFields.update(
+                                                            'event_name',
+                                                            (e) => value,
+                                                            ifAbsent: () =>
+                                                                value);
+                                                      }),
+                                                ),
+                                                actions: [
+                                                  ElevatedButton(
+                                                      onPressed: () => {
+                                                            if (_form
+                                                                .currentState!
+                                                                .validate())
+                                                              {
+                                                                FirebaseDatabase
+                                                                    .instance
+                                                                    .ref(
+                                                                        '/events/$eventID/')
+                                                                    .update({
+                                                                  'name': formFields[
+                                                                      'event_name']
+                                                                }),
+                                                                Navigator.of(
+                                                                        context)
+                                                                    .pop()
+                                                              }
+                                                          },
+                                                      child:
+                                                          const Text('Salva'))
+                                                ],
+                                              );
+                                            });
+                                      },
+                                    ),
+                                  ])
+                          : Container(),
                     ],
                   ),
                 ),
@@ -132,25 +142,21 @@ class _EventPageState extends State<EventPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
+                          const Icon(
+                            Icons.group,
+                            size: 22,
+                          ),
                           Text(
-                            'creato da ${event.creatorName} il ${event.createAt.toString().substring(0, 10)}',
+                            ' ${event.partecipants.length} partecipanti',
                             style: const TextStyle(fontSize: 22),
                           ),
-                          Row(
-                            children: [
-                              const Icon(
-                                Icons.group,
-                                size: 22,
-                              ),
-                              Text(
-                                '${event.partecipants.length}',
-                                style: const TextStyle(fontSize: 22),
-                              ),
-                            ],
-                          )
                         ],
+                      ),
+                      Text(
+                        'creato da ${event.creatorName} il ${event.createAt.toString().substring(0, 10)}',
+                        style: const TextStyle(fontSize: 22),
                       ),
                       Text(
                         'Data evento: ${event.date.toString().substring(0, 10)} alle ${event.date.toString().substring(10, 16)}',
@@ -160,8 +166,7 @@ class _EventPageState extends State<EventPage> {
                           style: TextStyle(fontSize: 22)),
                       Text(event.description ?? 'Nessuna descrizione',
                           style: const TextStyle(fontSize: 16)),
-                      Divider(),
-                      const Padding(padding: EdgeInsets.only(bottom: 15.0)),
+                      const Divider(),
                       FutureBuilder(
                           future: FirebaseDatabase.instance
                               .ref()
@@ -182,10 +187,15 @@ class _EventPageState extends State<EventPage> {
                                           .appBarTheme
                                           .shadowColor,
                                       child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: [
-                                          Text('Percorso: ${route.name}',
-                                              style: const TextStyle(
-                                                  fontSize: 28)),
+                                          Center(
+                                            child: Text(
+                                                'Percorso: ${route.name}',
+                                                style: const TextStyle(
+                                                    fontSize: 28)),
+                                          ),
                                           Row(
                                             mainAxisAlignment:
                                                 MainAxisAlignment.spaceBetween,
@@ -296,18 +306,12 @@ class _EventPageState extends State<EventPage> {
                                           Text('Area: ${route.area}',
                                               style: const TextStyle(
                                                   fontSize: 24)),
-                                          Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            children: [
-                                              Text('da: ${route.pointStart} ',
-                                                  style: const TextStyle(
-                                                      fontSize: 22)),
-                                              Text('a: ${route.pointArrival}',
-                                                  style: const TextStyle(
-                                                      fontSize: 22)),
-                                            ],
-                                          )
+                                          Text('Partenza: ${route.pointStart} ',
+                                              style: const TextStyle(
+                                                  fontSize: 22)),
+                                          Text('Arrivo: ${route.pointArrival}',
+                                              style:
+                                                  const TextStyle(fontSize: 22))
                                         ],
                                       ),
                                     ),

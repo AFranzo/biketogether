@@ -136,7 +136,7 @@ class _EventPageState extends State<EventPage> {
                         children: [
                           Text(
                             'creato da ${event.creatorName} il ${event.createAt.toString().substring(0, 10)}',
-                            style: const TextStyle(fontSize: 20),
+                            style: const TextStyle(fontSize: 22),
                           ),
                           Row(
                             children: [

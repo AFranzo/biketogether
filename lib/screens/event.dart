@@ -204,7 +204,8 @@ class _EventPageState extends State<EventPage> {
                                                               .sentiment_satisfied_outlined,
                                                           size: 24,
                                                         ),
-                                                        Text(route.difficulty,
+                                                        Text(
+                                                            ' ${route.difficulty}',
                                                             style:
                                                                 const TextStyle(
                                                               fontSize: 24,
@@ -230,8 +231,7 @@ class _EventPageState extends State<EventPage> {
                                                               size: 24,
                                                             ),
                                                             Text(
-                                                                route
-                                                                    .difficulty,
+                                                                ' ${route.difficulty}',
                                                                 style:
                                                                     const TextStyle(
                                                                   fontSize: 24,
@@ -255,8 +255,7 @@ class _EventPageState extends State<EventPage> {
                                                               size: 24,
                                                             ),
                                                             Text(
-                                                                route
-                                                                    .difficulty,
+                                                                ' ${route.difficulty}',
                                                                 style:
                                                                     const TextStyle(
                                                                   fontSize: 24,
@@ -269,7 +268,7 @@ class _EventPageState extends State<EventPage> {
                                                     Icons.straighten,
                                                     size: 24,
                                                   ),
-                                                  Text('${route.lenght} km',
+                                                  Text(' ${route.lenght} km',
                                                       style: const TextStyle(
                                                           fontSize: 24)),
                                                 ],
@@ -280,7 +279,7 @@ class _EventPageState extends State<EventPage> {
                                                     Icons.schedule,
                                                     size: 24,
                                                   ),
-                                                  Text('${route.duration} h',
+                                                  Text(' ${route.duration} h',
                                                       style: const TextStyle(
                                                           fontSize: 24)),
                                                 ],
@@ -296,12 +295,18 @@ class _EventPageState extends State<EventPage> {
                                           Text('Area: ${route.area}',
                                               style: const TextStyle(
                                                   fontSize: 24)),
-                                          Text('da: ${route.pointStart}',
-                                              style: const TextStyle(
-                                                  fontSize: 22)),
-                                          Text('a: ${route.pointArrival}',
-                                              style: const TextStyle(
-                                                  fontSize: 22)),
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              Text('da: ${route.pointStart} ',
+                                                  style: const TextStyle(
+                                                      fontSize: 22)),
+                                              Text('a: ${route.pointArrival}',
+                                                  style: const TextStyle(
+                                                      fontSize: 22)),
+                                            ],
+                                          )
                                         ],
                                       ),
                                     ),

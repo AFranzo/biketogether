@@ -23,6 +23,7 @@ class BikeEvent {
       required this.description,
       required this.partecipants});
 
+
   /*
   * Insert a bike event
   * */
@@ -58,5 +59,6 @@ class BikeEvent {
         name: data['name'] ?? 'name',
         partecipants: parts,
         description: data['description'] ?? '');
+
   }
 }

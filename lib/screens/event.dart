@@ -135,18 +135,18 @@ class _EventPageState extends State<EventPage> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            '${event.creatorName} creato il ${event.createAt.toString().substring(0, 10)}',
+                            'creato da ${event.creatorName} il ${event.createAt.toString().substring(0, 10)}',
                             style: const TextStyle(fontSize: 20),
                           ),
                           Row(
                             children: [
-                              Text(
-                                '${event.partecipants.length}',
-                                style: const TextStyle(fontSize: 22),
-                              ),
                               const Icon(
                                 Icons.group,
                                 size: 22,
+                              ),
+                              Text(
+                                '${event.partecipants.length}',
+                                style: const TextStyle(fontSize: 22),
                               ),
                             ],
                           )
@@ -156,8 +156,10 @@ class _EventPageState extends State<EventPage> {
                         'Data evento: ${event.date.toString().substring(0, 10)} alle ${event.date.toString().substring(10, 16)}',
                         style: const TextStyle(fontSize: 22),
                       ),
-                      Text('Descrizione evento: ${event.description}',
-                          style: const TextStyle(fontSize: 22)),
+                      const Text('Descrizione evento:',
+                          style: TextStyle(fontSize: 22)),
+                      Text(event.description,
+                          style: const TextStyle(fontSize: 16)),
                       const Padding(padding: EdgeInsets.only(bottom: 15.0)),
                       FutureBuilder(
                           future: FirebaseDatabase.instance
@@ -174,63 +176,135 @@ class _EventPageState extends State<EventPage> {
                                       // mainAxisAlignment: MainAxisAlignment.start,
                                       // crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
-                                    Text('Percorso: ${route.name}',
-                                        style: const TextStyle(fontSize: 28)),
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        (route.difficulty == 'facile')
-                                            ? Text(route.difficulty,
-                                                style: const TextStyle(
-                                                    fontSize: 24,
-                                                    backgroundColor:
-                                                        Colors.greenAccent))
-                                            : (route.difficulty == 'media')
-                                                ? Text(route.difficulty,
-                                                    style: const TextStyle(
-                                                        fontSize: 24,
-                                                        backgroundColor: Colors
-                                                            .orangeAccent))
-                                                : Text(route.difficulty,
-                                                    style: const TextStyle(
-                                                        fontSize: 24,
-                                                        backgroundColor:
-                                                            Colors.redAccent)),
-                                        Row(
-                                          children: [
-                                            Text('${route.lenght} km',
-                                                style: const TextStyle(
-                                                    fontSize: 24)),
-                                            const Icon(
-                                              Icons.straighten,
-                                              size: 24,
-                                            )
-                                          ],
-                                        ),
-                                        Row(
-                                          children: [
-                                            Text('${route.duration} h',
-                                                style: const TextStyle(
-                                                    fontSize: 24)),
-                                            const Icon(
-                                              Icons.schedule,
-                                              size: 24,
-                                            ),
-                                          ],
-                                        )
-                                      ],
+                                    Container(
+                                      color: Theme.of(context)
+                                          .appBarTheme
+                                          .shadowColor,
+                                      child: Column(
+                                        children: [
+                                          Text('Percorso: ${route.name}',
+                                              style: const TextStyle(
+                                                  fontSize: 28)),
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              (route.difficulty == 'facile')
+                                                  ? Container(
+                                                      decoration: BoxDecoration(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(5),
+                                                        color:
+                                                            Colors.greenAccent,
+                                                      ),
+                                                      child: Row(children: [
+                                                        const Icon(
+                                                          Icons
+                                                              .sentiment_satisfied_outlined,
+                                                          size: 24,
+                                                        ),
+                                                        Text(route.difficulty,
+                                                            style:
+                                                                const TextStyle(
+                                                              fontSize: 24,
+                                                            )),
+                                                      ]),
+                                                    )
+                                                  : (route.difficulty ==
+                                                          'media')
+                                                      ? Container(
+                                                          decoration:
+                                                              BoxDecoration(
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        5),
+                                                            color: Colors
+                                                                .orangeAccent,
+                                                          ),
+                                                          child: Row(children: [
+                                                            const Icon(
+                                                              Icons
+                                                                  .sentiment_neutral_outlined,
+                                                              size: 24,
+                                                            ),
+                                                            Text(
+                                                                route
+                                                                    .difficulty,
+                                                                style:
+                                                                    const TextStyle(
+                                                                  fontSize: 24,
+                                                                )),
+                                                          ]),
+                                                        )
+                                                      : Container(
+                                                          decoration:
+                                                              BoxDecoration(
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        5),
+                                                            color: Colors
+                                                                .redAccent,
+                                                          ),
+                                                          child: Row(children: [
+                                                            const Icon(
+                                                              Icons
+                                                                  .sentiment_very_dissatisfied_outlined,
+                                                              size: 24,
+                                                            ),
+                                                            Text(
+                                                                route
+                                                                    .difficulty,
+                                                                style:
+                                                                    const TextStyle(
+                                                                  fontSize: 24,
+                                                                )),
+                                                          ]),
+                                                        ),
+                                              Row(
+                                                children: [
+                                                  const Icon(
+                                                    Icons.straighten,
+                                                    size: 24,
+                                                  ),
+                                                  Text('${route.lenght} km',
+                                                      style: const TextStyle(
+                                                          fontSize: 24)),
+                                                ],
+                                              ),
+                                              Row(
+                                                children: [
+                                                  const Icon(
+                                                    Icons.schedule,
+                                                    size: 24,
+                                                  ),
+                                                  Text('${route.duration} h',
+                                                      style: const TextStyle(
+                                                          fontSize: 24)),
+                                                ],
+                                              )
+                                            ],
+                                          ),
+                                          const Padding(
+                                              padding: EdgeInsets.only(
+                                                  bottom: 10.0)),
+                                          Text('Tipo: ${route.type}',
+                                              style: const TextStyle(
+                                                  fontSize: 24)),
+                                          Text('Area: ${route.area}',
+                                              style: const TextStyle(
+                                                  fontSize: 24)),
+                                          Text('da: ${route.pointStart}',
+                                              style: const TextStyle(
+                                                  fontSize: 22)),
+                                          Text('a: ${route.pointArrival}',
+                                              style: const TextStyle(
+                                                  fontSize: 22)),
+                                        ],
+                                      ),
                                     ),
-                                    const Padding(
-                                        padding: EdgeInsets.only(bottom: 10.0)),
-                                    Text('Tipo: ${route.type}',
-                                        style: const TextStyle(fontSize: 24)),
-                                    Text('Area: ${route.area}',
-                                        style: const TextStyle(fontSize: 24)),
-                                    Text('da: ${route.pointStart}',
-                                        style: const TextStyle(fontSize: 22)),
-                                    Text('a: ${route.pointArrival}',
-                                        style: const TextStyle(fontSize: 22)),
                                     ExpansionTile(
                                       title: const Text('Consigli',
                                           style: TextStyle(fontSize: 22)),

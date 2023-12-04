@@ -231,24 +231,39 @@ class _EventPageState extends State<EventPage> {
                                         style: const TextStyle(fontSize: 22)),
                                     Text('a: ${route.pointArrival}',
                                         style: const TextStyle(fontSize: 22)),
-                                    const Text('Consigli:',
-                                        style: TextStyle(fontSize: 22)),
-                                    Text(route.advice,
-                                        style: const TextStyle(fontSize: 16)),
-                                    const Text('Descrizione:',
-                                        style: TextStyle(fontSize: 22)),
-                                    Text(route.description,
-                                        style: const TextStyle(fontSize: 16)),
-                                    const Row(
+                                    ExpansionTile(
+                                      title: const Text('Consigli',
+                                          style: TextStyle(fontSize: 22)),
                                       children: [
-                                        Text('Mappa\nPercorso',
-                                            style: TextStyle(fontSize: 22)),
-                                        Padding(
-                                            padding:
-                                                EdgeInsets.only(right: 10.0)),
-                                        Icon(Icons.download)
+                                        ListTile(
+                                            title: Text(route.advice,
+                                                style: const TextStyle(
+                                                    fontSize: 16))),
                                       ],
                                     ),
+                                    ExpansionTile(
+                                      title: const Text('Descrizione',
+                                          style: TextStyle(fontSize: 22)),
+                                      children: [
+                                        ListTile(
+                                            title: Text(route.description,
+                                                style: const TextStyle(
+                                                    fontSize: 16)))
+                                      ],
+                                    ),
+                                    ElevatedButton(
+                                      onPressed: () {},
+                                      child: const Row(
+                                        children: [
+                                          Text('Mappa percorso',
+                                              style: TextStyle(fontSize: 22)),
+                                          Padding(
+                                              padding:
+                                                  EdgeInsets.only(right: 10.0)),
+                                          Icon(Icons.download)
+                                        ],
+                                      ),
+                                    )
                                   ]));
                             }
                             return const CircularProgressIndicator();

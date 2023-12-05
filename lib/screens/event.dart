@@ -136,7 +136,7 @@ class _EventPageState extends State<EventPage> {
                   ),
                 ),
                 body: Padding(
-                  padding: const EdgeInsets.all(15.0),
+                  padding: const EdgeInsets.all(20.0),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -144,28 +144,51 @@ class _EventPageState extends State<EventPage> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Icon(
-                            Icons.group,
-                            size: 22,
+                          Row(
+                            children: [
+                              const Icon(
+                                Icons.calendar_month,
+                                size: 26,
+                              ),
+                              Text(
+                                ' ${event.date.toString().substring(0, 10)}',
+                                style: const TextStyle(fontSize: 26),
+                              ),
+                              const Padding(
+                                  padding: EdgeInsets.only(right: 20.0)),
+                              const Icon(
+                                Icons.schedule,
+                                size: 26,
+                              ),
+                              Text(
+                                ' ${event.date.toString().substring(10, 16)}',
+                                style: const TextStyle(fontSize: 26),
+                              ),
+                            ],
                           ),
-                          Text(
-                            ' ${event.partecipants.length} partecipanti',
-                            style: const TextStyle(fontSize: 22),
-                          ),
+                          Row(
+                            children: [
+                              const Icon(
+                                Icons.group,
+                                size: 26,
+                              ),
+                              Text(
+                                ' ${event.partecipants.length}',
+                                style: const TextStyle(fontSize: 26),
+                              ),
+                            ],
+                          )
                         ],
                       ),
-                      Text(
-                        'creato da ${event.creatorName} il ${event.createAt.toString().substring(0, 10)}',
-                        style: const TextStyle(fontSize: 22),
-                      ),
-                      Text(
-                        'Data evento: ${event.date.toString().substring(0, 10)} alle ${event.date.toString().substring(10, 16)}',
-                        style: const TextStyle(fontSize: 22),
-                      ),
                       const Text('Descrizione evento:',
-                          style: TextStyle(fontSize: 22)),
-                      Text(event.description ?? 'Nessuna descrizione',
-                          style: const TextStyle(fontSize: 16)),
+                          style: TextStyle(fontSize: 24)),
+                      Text(event.description??'No descrizione',
+                          style: const TextStyle(fontSize: 18)),
+                      // Text(
+                      //   'creato da ${event.creatorName} il ${event.createAt.toString().substring(0, 10)}',
+                      //   style: const TextStyle(fontSize: 20),
+                      // ),
+                      const Padding(padding: EdgeInsets.only(bottom: 20.0)),
                       const Divider(),
                       FutureBuilder(
                           future: FirebaseDatabase.instance
@@ -178,177 +201,160 @@ class _EventPageState extends State<EventPage> {
                                   Map<String, dynamic>.from(
                                       snapshot.data!.snapshot.value as Map));
                               return Expanded(
-                                  child: ListView(
-                                      // mainAxisAlignment: MainAxisAlignment.start,
-                                      // crossAxisAlignment: CrossAxisAlignment.start,
+                                  child: ListView(children: [
+                                // Container(
+                                // color: Theme.of(context)
+                                //     .appBarTheme
+                                //     .shadowColor,
+                                // child:
+                                Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Padding(
+                                        padding: EdgeInsets.only(top: 20.0)),
+                                    Text('Percorso: ${route.name}',
+                                        style: const TextStyle(fontSize: 26)),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
                                       children: [
-                                    Container(
-                                      color: Theme.of(context)
-                                          .appBarTheme
-                                          .shadowColor,
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Center(
-                                            child: Text(
-                                                'Percorso: ${route.name}',
-                                                style: const TextStyle(
-                                                    fontSize: 28)),
-                                          ),
-                                          Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              (route.difficulty == 'facile')
-                                                  ? Container(
-                                                      decoration: BoxDecoration(
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(5),
-                                                        color:
-                                                            Colors.greenAccent,
-                                                      ),
-                                                      child: Row(children: [
-                                                        const Icon(
-                                                          Icons
-                                                              .sentiment_satisfied_outlined,
-                                                          size: 24,
-                                                        ),
-                                                        Text(
-                                                            ' ${route.difficulty}',
-                                                            style:
-                                                                const TextStyle(
-                                                              fontSize: 24,
-                                                            )),
-                                                      ]),
-                                                    )
-                                                  : (route.difficulty ==
-                                                          'media')
-                                                      ? Container(
-                                                          decoration:
-                                                              BoxDecoration(
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        5),
-                                                            color: Colors
-                                                                .orangeAccent,
-                                                          ),
-                                                          child: Row(children: [
-                                                            const Icon(
-                                                              Icons
-                                                                  .sentiment_neutral_outlined,
-                                                              size: 24,
-                                                            ),
-                                                            Text(
-                                                                ' ${route.difficulty}',
-                                                                style:
-                                                                    const TextStyle(
-                                                                  fontSize: 24,
-                                                                )),
-                                                          ]),
-                                                        )
-                                                      : Container(
-                                                          decoration:
-                                                              BoxDecoration(
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        5),
-                                                            color: Colors
-                                                                .redAccent,
-                                                          ),
-                                                          child: Row(children: [
-                                                            const Icon(
-                                                              Icons
-                                                                  .sentiment_very_dissatisfied_outlined,
-                                                              size: 24,
-                                                            ),
-                                                            Text(
-                                                                ' ${route.difficulty}',
-                                                                style:
-                                                                    const TextStyle(
-                                                                  fontSize: 24,
-                                                                )),
-                                                          ]),
-                                                        ),
-                                              Row(
-                                                children: [
+                                        (route.difficulty == 'facile')
+                                            ? Container(
+                                                decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(5),
+                                                  color: Colors.greenAccent,
+                                                ),
+                                                child: Row(children: [
                                                   const Icon(
-                                                    Icons.straighten,
+                                                    Icons
+                                                        .sentiment_satisfied_outlined,
                                                     size: 24,
                                                   ),
-                                                  Text(' ${route.lenght} km',
+                                                  Text(' ${route.difficulty}',
                                                       style: const TextStyle(
-                                                          fontSize: 24)),
-                                                ],
-                                              ),
-                                              Row(
-                                                children: [
-                                                  const Icon(
-                                                    Icons.schedule,
-                                                    size: 24,
-                                                  ),
-                                                  Text(' ${route.duration} h',
-                                                      style: const TextStyle(
-                                                          fontSize: 24)),
-                                                ],
+                                                        fontSize: 24,
+                                                      )),
+                                                ]),
                                               )
-                                            ],
-                                          ),
-                                          const Padding(
-                                              padding: EdgeInsets.only(
-                                                  bottom: 10.0)),
-                                          Text('Tipo: ${route.type}',
-                                              style: const TextStyle(
-                                                  fontSize: 24)),
-                                          Text('Area: ${route.area}',
-                                              style: const TextStyle(
-                                                  fontSize: 24)),
-                                          Text('Partenza: ${route.pointStart} ',
-                                              style: const TextStyle(
-                                                  fontSize: 22)),
-                                          Text('Arrivo: ${route.pointArrival}',
-                                              style:
-                                                  const TextStyle(fontSize: 22))
-                                        ],
-                                      ),
-                                    ),
-                                    ExpansionTile(
-                                      title: const Text('Consigli',
-                                          style: TextStyle(fontSize: 22)),
-                                      children: [
-                                        ListTile(
-                                            title: Text(route.advice,
+                                            : (route.difficulty == 'media')
+                                                ? Container(
+                                                    decoration: BoxDecoration(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              5),
+                                                      color:
+                                                          Colors.orangeAccent,
+                                                    ),
+                                                    child: Row(children: [
+                                                      const Icon(
+                                                        Icons
+                                                            .sentiment_neutral_outlined,
+                                                        size: 24,
+                                                      ),
+                                                      Text(
+                                                          ' ${route.difficulty}',
+                                                          style:
+                                                              const TextStyle(
+                                                            fontSize: 24,
+                                                          )),
+                                                    ]),
+                                                  )
+                                                : Container(
+                                                    decoration: BoxDecoration(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              5),
+                                                      color: Colors.redAccent,
+                                                    ),
+                                                    child: Row(children: [
+                                                      const Icon(
+                                                        Icons
+                                                            .sentiment_very_dissatisfied_outlined,
+                                                        size: 24,
+                                                      ),
+                                                      Text(
+                                                          ' ${route.difficulty}',
+                                                          style:
+                                                              const TextStyle(
+                                                            fontSize: 24,
+                                                          )),
+                                                    ]),
+                                                  ),
+                                        Row(
+                                          children: [
+                                            const Icon(
+                                              Icons.straighten,
+                                              size: 24,
+                                            ),
+                                            Text(' ${route.lenght} km',
                                                 style: const TextStyle(
-                                                    fontSize: 16))),
+                                                    fontSize: 24)),
+                                          ],
+                                        ),
+                                        Row(
+                                          children: [
+                                            const Icon(
+                                              Icons.hourglass_empty,
+                                              size: 24,
+                                            ),
+                                            Text(' ${route.duration} h',
+                                                style: const TextStyle(
+                                                    fontSize: 24)),
+                                          ],
+                                        )
                                       ],
                                     ),
-                                    ExpansionTile(
-                                      title: const Text('Descrizione',
+                                    const Padding(
+                                        padding: EdgeInsets.only(bottom: 20.0)),
+                                    Text('Tipo: ${route.type}',
+                                        style: const TextStyle(fontSize: 22)),
+                                    Text('Zona: ${route.area}',
+                                        style: const TextStyle(fontSize: 22)),
+                                    Text('da: ${route.pointStart} ',
+                                        style: const TextStyle(fontSize: 22)),
+                                    Text('a: ${route.pointArrival}',
+                                        style: const TextStyle(fontSize: 22)),
+                                  ],
+                                ),
+                                const Padding(
+                                    padding: EdgeInsets.only(bottom: 20.0)),
+                                // ),
+                                ExpansionTile(
+                                  title: const Text('Consigli',
+                                      style: TextStyle(fontSize: 22)),
+                                  children: [
+                                    ListTile(
+                                        title: Text(route.advice,
+                                            style:
+                                                const TextStyle(fontSize: 16))),
+                                  ],
+                                ),
+                                ExpansionTile(
+                                  title: const Text('Descrizione',
+                                      style: TextStyle(fontSize: 22)),
+                                  children: [
+                                    ListTile(
+                                        title: Text(route.description,
+                                            style:
+                                                const TextStyle(fontSize: 16)))
+                                  ],
+                                ),
+                                ElevatedButton(
+                                  onPressed: () {},
+                                  child: const Row(
+                                    children: [
+                                      Text('Mappa percorso',
                                           style: TextStyle(fontSize: 22)),
-                                      children: [
-                                        ListTile(
-                                            title: Text(route.description,
-                                                style: const TextStyle(
-                                                    fontSize: 16)))
-                                      ],
-                                    ),
-                                    ElevatedButton(
-                                      onPressed: () {},
-                                      child: const Row(
-                                        children: [
-                                          Text('Mappa percorso',
-                                              style: TextStyle(fontSize: 22)),
-                                          Padding(
-                                              padding:
-                                                  EdgeInsets.only(right: 10.0)),
-                                          Icon(Icons.download)
-                                        ],
-                                      ),
-                                    )
-                                  ]));
+                                      Padding(
+                                          padding:
+                                              EdgeInsets.only(right: 10.0)),
+                                      Icon(Icons.download)
+                                    ],
+                                  ),
+                                )
+                              ]));
                             }
                             return const CircularProgressIndicator();
                           })

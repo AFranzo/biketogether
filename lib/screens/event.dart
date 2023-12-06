@@ -3,6 +3,8 @@
 
 import 'package:biketogether/modules/bike_event.dart';
 import 'package:biketogether/modules/bike_route.dart';
+import 'package:biketogether/screens/chat.dart';
+import 'package:biketogether/screens/homepage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
@@ -45,6 +47,9 @@ class _EventPageState extends State<EventPage> {
                         event.name,
                         overflow: TextOverflow.fade,
                       )),
+
+                      // participant?: ((owner?settings:leave),chat):join
+
                       (!event.partecipants
                               .contains(FirebaseAuth.instance.currentUser!.uid))
                           ? IconButton(
@@ -58,80 +63,97 @@ class _EventPageState extends State<EventPage> {
                                 });
                               },
                               icon: const Icon(Icons.add))
-                          : IconButton(
+                          : Row(
+                        children: [
+                          IconButton(onPressed: (){
+                            Navigator.push(context,MaterialPageRoute(builder: (context) => ChatPage()) );
+                          }, icon:const Icon(Icons.chat)),
+                          (event.creatorId !=
+                              FirebaseAuth.instance.currentUser!.uid)?IconButton(
                               onPressed: () {
-                                FirebaseDatabase.instance
-                                    .ref('/events/$eventID/partecipants/')
-                                    .orderByChild('uid')
-                                    .equalTo(
-                                        FirebaseAuth.instance.currentUser!.uid)
-                                    .ref
-                                    .remove();
+                                showDialog(context: context, builder: (context){
+                                  return AlertDialog(
+                                    title: Text('Abbandona evento'),
+                                    content: Text('vuoi abbandonare l\'evento "${event.name}"?'),
+                                    actions: [ElevatedButton(onPressed: (){
+
+                                      FirebaseDatabase.instance
+                                          .ref('/events/$eventID/partecipants/')
+                                          .orderByChild('uid')
+                                          .equalTo(
+                                          FirebaseAuth.instance.currentUser!.uid)
+                                          .ref
+                                          .remove();
+                                      Navigator.of(
+                                          context)
+                                          .pop();
+                                    }, child: const Text('Lascia',style: TextStyle(color: Colors.white),),style: ButtonStyle(backgroundColor: MaterialStateProperty.all(Colors.redAccent)),),],
+                                  );
+                                });
                               },
-                              icon: const Icon(Icons.remove)),
-                      (event.creatorId ==
-                              FirebaseAuth.instance.currentUser!.uid)
-                          ? PopupMenuButton(
+                              icon: const Icon(Icons.remove)):PopupMenuButton(
                               itemBuilder: (context) => [
-                                    PopupMenuItem(
-                                      child: Text('Modifica'),
-                                      onTap: () {
-                                        showDialog<void>(
-                                            context: context,
-                                            builder: (BuildContext context) {
-                                              return AlertDialog(
-                                                title: const Text(
-                                                    'Modifica Evento'),
-                                                content: Form(
-                                                  key: _form,
-                                                  child: TextFormField(
-                                                      decoration: const InputDecoration(
-                                                          border:
-                                                              UnderlineInputBorder(),
-                                                          labelText:
-                                                              'Nome dell\'evento'),
-                                                      initialValue: event.name,
-                                                      validator: (value) {
-                                                        if (value == null ||
-                                                            value == '') {
-                                                          return "Nome non può essere nullo";
-                                                        }
-                                                        formFields.update(
-                                                            'event_name',
+                                PopupMenuItem(
+                                  child: Text('Modifica'),
+                                  onTap: () {
+                                    showDialog<void>(
+                                        context: context,
+                                        builder: (BuildContext context) {
+                                          return AlertDialog(
+                                            title: const Text(
+                                                'Modifica Evento'),
+                                            content: Form(
+                                              key: _form,
+                                              child: TextFormField(
+                                                  decoration: const InputDecoration(
+                                                      border:
+                                                      UnderlineInputBorder(),
+                                                      labelText:
+                                                      'Nome dell\'evento'),
+                                                  initialValue: event.name,
+                                                  validator: (value) {
+                                                    if (value == null ||
+                                                        value == '') {
+                                                      return "Nome non può essere nullo";
+                                                    }
+                                                    formFields.update(
+                                                        'event_name',
                                                             (e) => value,
-                                                            ifAbsent: () =>
-                                                                value);
-                                                      }),
-                                                ),
-                                                actions: [
-                                                  ElevatedButton(
-                                                      onPressed: () => {
-                                                            if (_form
-                                                                .currentState!
-                                                                .validate())
-                                                              {
-                                                                FirebaseDatabase
-                                                                    .instance
-                                                                    .ref(
-                                                                        '/events/$eventID/')
-                                                                    .update({
-                                                                  'name': formFields[
-                                                                      'event_name']
-                                                                }),
-                                                                Navigator.of(
-                                                                        context)
-                                                                    .pop()
-                                                              }
-                                                          },
-                                                      child:
-                                                          const Text('Salva'))
-                                                ],
-                                              );
-                                            });
-                                      },
-                                    ),
-                                  ])
-                          : Container(),
+                                                        ifAbsent: () =>
+                                                        value);
+                                                  }),
+                                            ),
+                                            actions: [
+                                              ElevatedButton(
+                                                  onPressed: () => {
+                                                    if (_form
+                                                        .currentState!
+                                                        .validate())
+                                                      {
+                                                        FirebaseDatabase
+                                                            .instance
+                                                            .ref(
+                                                            '/events/$eventID/')
+                                                            .update({
+                                                          'name': formFields[
+                                                          'event_name']
+                                                        }),
+                                                        Navigator.of(
+                                                            context)
+                                                            .pop()
+                                                      }
+                                                  },
+                                                  child:
+                                                  const Text('Salva'))
+                                            ],
+                                          );
+                                        });
+                                  },
+                                ),
+                              ])
+
+                        ],
+                      )
                     ],
                   ),
                 ),

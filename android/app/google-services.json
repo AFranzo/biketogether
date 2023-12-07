@@ -23,6 +23,30 @@
           }
         },
         {
+          "client_id": "773031169627-n26uvn65jf1b1r89l083kf2p1oo3eqpq.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.biketogether",
+            "certificate_hash": "d29426e7ff410206fb59a4d94a56029f136069cd"
+          }
+        },
+        {
+          "client_id": "773031169627-qilm7bvskoinbigkqshktvm1507tglqr.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.biketogether",
+            "certificate_hash": "e115520ceeeca62e6021dd37b53e17f2096309f1"
+          }
+        },
+        {
+          "client_id": "773031169627-uudrqqao5b72ifldbr17sn02rcfkhrbf.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.biketogether",
+            "certificate_hash": "b1724cf6ace2918791ea81d67e0eaa8e34256ce5"
+          }
+        },
+        {
           "client_id": "773031169627-lju929sp75fb48oc92kiiiao08c2o7qf.apps.googleusercontent.com",
           "client_type": 3
         }

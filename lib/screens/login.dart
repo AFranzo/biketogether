@@ -1,4 +1,3 @@
-import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -39,14 +38,17 @@ class Authentication {
 
   static Future<FirebaseApp> initializeFirebase({
     required BuildContext context,
-  }) async{
-    FirebaseApp firebaseApp = await Firebase.initializeApp( options: DefaultFirebaseOptions.currentPlatform,);
-    if (FirebaseAuth.instance.currentUser != null) {
+  }) async {
+    FirebaseApp firebaseApp = await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+
+    User? user = FirebaseAuth.instance.currentUser;
+
+    if (user != null) {
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(
-          builder: (context) =>
-              const MyHomePage(title : "biketogether"
-              ),
+          builder: (context) => MyHomePage(title: "biketogether"),
         ),
       );
     }
@@ -62,7 +64,7 @@ class Authentication {
 
       try {
         final UserCredential userCredential =
-        await auth.signInWithPopup(authProvider);
+            await auth.signInWithPopup(authProvider);
 
         user = userCredential.user;
       } catch (e) {
@@ -72,11 +74,11 @@ class Authentication {
       final GoogleSignIn googleSignIn = GoogleSignIn();
 
       final GoogleSignInAccount? googleSignInAccount =
-      await googleSignIn.signIn();
+          await googleSignIn.signIn();
 
       if (googleSignInAccount != null) {
         final GoogleSignInAuthentication googleSignInAuthentication =
-        await googleSignInAccount.authentication;
+            await googleSignInAccount.authentication;
 
         final AuthCredential credential = GoogleAuthProvider.credential(
           accessToken: googleSignInAuthentication.accessToken,
@@ -85,7 +87,7 @@ class Authentication {
 
         try {
           final UserCredential userCredential =
-          await auth.signInWithCredential(credential);
+              await auth.signInWithCredential(credential);
 
           user = userCredential.user;
         } on FirebaseAuthException catch (e) {
@@ -110,8 +112,6 @@ class GoogleSignInButton extends StatefulWidget {
 }
 
 class _GoogleSignInButtonState extends State<GoogleSignInButton> {
-
-
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -126,13 +126,11 @@ class _GoogleSignInButtonState extends State<GoogleSignInButton> {
           ),
         ),
         onPressed: () async {
-
-
-          User? user =
-          await Authentication.signInWithGoogle(context: context);
+          User? user = await Authentication.signInWithGoogle(context: context);
 
           if (user != null) {
-            Navigator.push(context,
+            Navigator.push(
+              context,
               MaterialPageRoute(
                 builder: (context) => MyHomePage(
                   title: "biketogether",
@@ -140,7 +138,6 @@ class _GoogleSignInButtonState extends State<GoogleSignInButton> {
               ),
             );
           }
-
         },
         child: const Padding(
           padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
@@ -151,10 +148,11 @@ class _GoogleSignInButtonState extends State<GoogleSignInButton> {
               Padding(
                 padding: EdgeInsets.only(left: 10),
                 child: Text(
-                  'Effettua il Login con Google',
+                  'Sign in with Google',
                   style: TextStyle(
                     fontSize: 20,
                     color: Colors.black54,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
               )
@@ -170,7 +168,7 @@ class _SignInScreenState extends State<SignInPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.orange,
+      backgroundColor: Colors.white,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.only(
@@ -178,30 +176,47 @@ class _SignInScreenState extends State<SignInPage> {
             right: 16.0,
             bottom: 20.0,
           ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              const SizedBox(width: 20.0, height: 100.0),
-              const Text(
-                'Be',
-                style: TextStyle(fontSize: 43.0),
-              ),
-              const SizedBox(width: 20.0, height: 100.0),
-              DefaultTextStyle(
-                style: const TextStyle(
-                  fontSize: 40.0,
-                  fontFamily: 'Horizon',
-                ),
-                child: AnimatedTextKit(
-                  animatedTexts: [
-                    RotateAnimatedText('AWESOME'),
-                    RotateAnimatedText('OPTIMISTIC'),
-                    RotateAnimatedText('DIFFERENT'),
+          child: Column(
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              const Row(),
+              const Expanded(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SizedBox(height: 20),
+                    Text(
+                      'FlutterFire',
+                      style: TextStyle(
+                        color: Colors.yellow,
+                        fontSize: 40,
+                      ),
+                    ),
+                    Text(
+                      'Authentication',
+                      style: TextStyle(
+                        color: Colors.orange,
+                        fontSize: 40,
+                      ),
+                    ),
                   ],
-                  onTap: () {
-                    print("Tap Event");
-                  },
                 ),
+              ),
+              FutureBuilder(
+                future: Authentication.initializeFirebase(context: context),
+                builder: (context, snapshot) {
+                  if (snapshot.hasError) {
+                    return const Text('Error initializing Firebase');
+                  } else if (snapshot.connectionState == ConnectionState.done) {
+                    return GoogleSignInButton();
+                  }
+                  return const CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      Colors.orange,
+                    ),
+                  );
+                },
               ),
             ],
           ),
@@ -210,46 +225,3 @@ class _SignInScreenState extends State<SignInPage> {
     );
   }
 }
-
-/*Column(
-            children: [
-              const SizedBox(height: 30
-              ),
-              const Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                Text(
-                  'Biketogether',
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 40,
-                  ),
-                ),
-              ],
-              ),
-              Expanded(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-
-                    FutureBuilder(future: Authentication.initializeFirebase(context: context), builder: (context, snapshot) {
-                      if (snapshot.hasError) {
-                        return const Text('Error initializing Firebase');
-                      } else if (snapshot.connectionState == ConnectionState.done) {
-                        return GoogleSignInButton();
-                      }
-                      return const CircularProgressIndicator(
-                        valueColor: AlwaysStoppedAnimation<Color>(
-                          Colors.orange,
-                        ),
-                      );
-                    },),
-                  ],
-                ),
-              ),
-
-
-
-            ],
-          ),*/

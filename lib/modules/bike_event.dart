@@ -44,10 +44,7 @@ class BikeEvent {
     if (data['partecipants'] != null) {
       Map partMap = data['partecipants'] as Map;
       partMap.forEach((key, value) {
-        Map part = value as Map;
-        part.forEach((key, value) {
-          parts.add(value);
-        });
+          parts.add(key);
       });
     }
     return BikeEvent(

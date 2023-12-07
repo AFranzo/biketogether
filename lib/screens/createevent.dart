@@ -16,12 +16,26 @@ class _createEventState extends State<CreateEvent> {
   String _selectedPath = '';
   final _form = GlobalKey<FormState>();
   Map<String, dynamic> formFields = {};
+  ///Date controller
   final TextEditingController _dateController = TextEditingController();
-
+  final TextEditingController _timeC = TextEditingController();
   @override
   void initState() {
     super.initState();
     _dateController.text = "";
+  }
+
+  ///Time
+  TimeOfDay timeOfDay = TimeOfDay.now();
+
+  Future displayTimePicker(BuildContext context) async{
+    var time = await showTimePicker(context: context, initialTime: timeOfDay);
+
+    if(time != null){
+      setState(() {
+        _timeC.text = "${time.hour}:${time.minute}";
+      });
+    }
   }
 
   Future<void> _selectDate() async {
@@ -145,6 +159,28 @@ class _createEventState extends State<CreateEvent> {
                       onTap: () {
                         _selectDate();
                       },
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 30, right: 30),
+                    child: TextField(
+                      controller: _timeC,
+                      decoration: const InputDecoration(
+                        labelText: 'Orario Evento',
+                        filled: true,
+                        prefixIcon: Icon(Icons.alarm),
+                        enabledBorder:
+                        OutlineInputBorder(borderSide: BorderSide.none),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.blue),
+                        ),
+                      ),
+                      readOnly: true,
+                      onTap: (){
+                        displayTimePicker(context);
+                      }
                     ),
                   ),
                 ),

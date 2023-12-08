@@ -1,5 +1,6 @@
 import 'package:biketogether/modules/bike_event.dart';
 import 'package:biketogether/modules/bike_route.dart';
+import 'package:biketogether/screens/homepage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
@@ -238,12 +239,14 @@ class _createEventState extends State<CreateEvent> {
                                   .toString(),
                               partecipants: [],
                               description: formFields['desc'] ?? ''));
+
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
                                 backgroundColor: Colors.green,
                                 content: Text(
                                     'Evento Creato')), // TODO check if event is created maybe and report success
                           );
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => MyHomePage(title: 'Biketogether')) );
                         }
                       },
                       child: const Text(

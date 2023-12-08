@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 
 /*
@@ -35,7 +36,10 @@ class BikeEvent {
       'route': b.bikeRouteName,
       'date': b.date.millisecondsSinceEpoch,
       'name': b.name,
-      'description': b.description
+      'description': b.description,
+      'partecipants':{
+        FirebaseAuth.instance.currentUser!.uid:DateTime.now().millisecondsSinceEpoch
+      }
     });
   }
 

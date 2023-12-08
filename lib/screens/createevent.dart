@@ -16,6 +16,7 @@ class _createEventState extends State<CreateEvent> {
   String _selectedPath = '';
   final _form = GlobalKey<FormState>();
   Map<String, dynamic> formFields = {};
+  late DateTime first;
   ///Date controller
   final TextEditingController _dateController = TextEditingController();
   final TextEditingController _timeC = TextEditingController();
@@ -34,6 +35,9 @@ class _createEventState extends State<CreateEvent> {
     if(time != null){
       setState(() {
         _timeC.text = "${time.hour}:${time.minute}";
+        DateTime finalDate = DateTime(first.year, first.month, first.day, time.hour, time.minute);
+        formFields.update('date', (value) => finalDate.millisecondsSinceEpoch,
+            ifAbsent: () => finalDate.millisecondsSinceEpoch);
       });
     }
   }
@@ -48,8 +52,7 @@ class _createEventState extends State<CreateEvent> {
     if (_picked != null) {
       setState(() {
         _dateController.text = _picked.toString().split(" ")[0];
-        formFields.update('date', (value) => _picked.millisecondsSinceEpoch,
-            ifAbsent: () => _picked.millisecondsSinceEpoch);
+        first = DateTime(_picked.year, _picked.month, _picked.day);
       });
     }
   }
@@ -170,7 +173,7 @@ class _createEventState extends State<CreateEvent> {
                       decoration: const InputDecoration(
                         labelText: 'Orario Evento',
                         filled: true,
-                        prefixIcon: Icon(Icons.alarm),
+                        prefixIcon: Icon(Icons.alarm), //TODO find better icons
                         enabledBorder:
                         OutlineInputBorder(borderSide: BorderSide.none),
                         focusedBorder: OutlineInputBorder(
@@ -179,7 +182,34 @@ class _createEventState extends State<CreateEvent> {
                       ),
                       readOnly: true,
                       onTap: (){
-                        displayTimePicker(context);
+                        if(_dateController.text.isEmpty){
+                          showDialog<void>(
+                            context: context,
+                            barrierDismissible: false, // user must tap button!
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: const Text('Errore'),
+                                content: const SingleChildScrollView(
+                                  child: ListBody(
+                                    children: <Widget>[
+                                      Text('Inserisci prima la data.'),
+                                    ],
+                                  ),
+                                ),
+                                actions: <Widget>[
+                                  TextButton(
+                                    child: const Text('Capito'),
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                        }else {
+                          displayTimePicker(context);
+                        }
                       }
                     ),
                   ),

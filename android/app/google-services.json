@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "773031169627-6ihbot4lhv7is6gotclnct2d3rq1scra.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.biketogether",
+            "certificate_hash": "757e5ade4a4981745d743d4ca038fb838d38b4ba"
+          }
+        },
+        {
           "client_id": "773031169627-amm8c3gv66vahuhveiv0flqh06oetjv1.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {

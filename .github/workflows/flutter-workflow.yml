@@ -20,21 +20,32 @@ jobs:
         with:
           flutter-version: '3.13.6'
           channel: 'stable'
+
+          
       # check dependencies and run tests
       - run: flutter pub get
       # - run: flutter test
       # builds the app
       - run: flutter build apk
+      - name: Signing APK
+        uses: r0adkll/sign-android-release@v1
+        id: sign_app
+        with:
+          releaseDirectory: build/app/outputs/flutter-apk
+          signingKeyBase64: ${{ secrets.ANDROID_KEYSTORE_B64 }}
+          alias: ${{ secrets.KEY_ALIAS }}
+          keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
+          keyPassword: ${{ secrets.KEY_PASSWORD }}
       # uploads the apk as an artifact so it can be retrieved next
       - uses: actions/upload-artifact@v1
         with:
           name: release-apk
-          path: build/app/outputs/flutter-apk/app-release.apk
+          path: ${{steps.sign_app.outputs.signedReleaseFile}}
   release:
     needs: build      
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v3
         id: download
         with:
           name: release-apk
@@ -43,7 +54,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          file: "./app-release.apk"
+          file:  "${{steps.download.outputs.download-path}}/*.apk"
           overwrite: true
           draft: false
           update_latest_release: true

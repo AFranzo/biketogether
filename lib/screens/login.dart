@@ -1,3 +1,4 @@
+import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -116,6 +117,7 @@ class _GoogleSignInButtonState extends State<GoogleSignInButton> {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16.0),
+
       child: OutlinedButton(
         style: ButtonStyle(
           backgroundColor: MaterialStateProperty.all(Colors.white),
@@ -151,7 +153,7 @@ class _GoogleSignInButtonState extends State<GoogleSignInButton> {
                   'Sign in with Google',
                   style: TextStyle(
                     fontSize: 20,
-                    color: Colors.black54,
+                    color: Colors.black,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -163,65 +165,70 @@ class _GoogleSignInButtonState extends State<GoogleSignInButton> {
     );
   }
 }
-
+const colorizeColors = [Colors.purple, Colors.blue, Colors.yellow, Colors.red];
+const colorizeTextStyle = TextStyle(fontSize: 50.0, fontWeight: FontWeight.bold);
 class _SignInScreenState extends State<SignInPage> {
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.only(
-            left: 16.0,
-            right: 16.0,
-            bottom: 20.0,
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.max,
-            children: [
-              const Row(),
-              const Expanded(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SizedBox(height: 20),
-                    Text(
-                      'FlutterFire',
-                      style: TextStyle(
-                        color: Colors.yellow,
-                        fontSize: 40,
-                      ),
-                    ),
-                    Text(
-                      'Authentication',
-                      style: TextStyle(
-                        color: Colors.orange,
-                        fontSize: 40,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              FutureBuilder(
-                future: Authentication.initializeFirebase(context: context),
-                builder: (context, snapshot) {
-                  if (snapshot.hasError) {
-                    return const Text('Error initializing Firebase');
-                  } else if (snapshot.connectionState == ConnectionState.done) {
-                    return GoogleSignInButton();
-                  }
-                  return const CircularProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation<Color>(
-                      Colors.orange,
-                    ),
-                  );
-                },
-              ),
-            ],
-          ),
-        ),
-      ),
+     body: Center(child: Container(height: double.infinity, width: double.infinity,color: Colors.white,child: Stack(
+       children: [
+         Container(
+           padding: const EdgeInsets.only(top: 150),
+           alignment: Alignment.topCenter,
+           child:  Image.asset("assets/logo.jpg"),
+         ),
+         Positioned.fill(child: buildColorizeAnimation(),),
+         Container(alignment: Alignment.bottomCenter,
+           padding: const EdgeInsets.only(bottom: 50),
+           child: FutureBuilder(
+           future: Authentication.initializeFirebase(context: context),
+           builder: (context, snapshot) {
+             if (snapshot.hasError) {
+               return const Text('Error initializing Firebase');
+             } else if (snapshot.connectionState == ConnectionState.done) {
+               return GoogleSignInButton();
+             }
+             return const CircularProgressIndicator(
+               valueColor: AlwaysStoppedAnimation<Color>(
+                 Colors.orange,
+               ),
+             );
+           },
+         ),),
+
+       ],
+     )),)
     );
   }
+
+  Widget buildColorizeAnimation() => Row(
+      mainAxisSize: MainAxisSize.min,
+      children: <Widget>[
+        const SizedBox(width: 20.0, height: 100.0),
+        const Text(
+          'Be',
+          style: TextStyle(fontSize: 43.0),
+        ),
+        const SizedBox(width: 10.0, height: 100.0),
+        DefaultTextStyle(
+          style: const TextStyle(
+            fontSize: 40.0,
+            fontFamily: 'Horizon',
+            color: Colors.black
+          ),
+          child: AnimatedTextKit(
+            animatedTexts: [
+              RotateAnimatedText('GREEN',textStyle: const TextStyle(color: Colors.green)),
+              RotateAnimatedText('TOGETHER',textStyle: const TextStyle(color: Colors.orange)),
+              RotateAnimatedText('DIFFERENT', textStyle: const TextStyle(color: Colors.red)),
+            ],
+            onTap: () {
+              print("Tap Event");
+            },
+          ),
+        ),
+      ],
+    );
 }

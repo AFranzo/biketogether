@@ -2,6 +2,7 @@
 import 'package:biketogether/modules/bike_event.dart';
 import 'package:biketogether/screens/createevent.dart';
 import 'package:biketogether/screens/event.dart';
+import 'package:biketogether/screens/personalevents.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
@@ -126,7 +127,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 children: [
                   ListTile(
                     leading: const Icon(Icons.add_circle),
-                    title: const Text('Create Event'),
+                    title: const Text('Creata Evento'),
                     onTap: () {
                       Navigator.push(
                           context,
@@ -134,6 +135,16 @@ class _MyHomePageState extends State<MyHomePage> {
                               builder: (context) => CreateEvent()));
                     },
                   ),
+                  ListTile(
+                    leading: const Icon(Icons.ballot),
+                    title: const Text('I Miei Eventi'),
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => MyEventsPage()));
+                    },
+                  )
                 ],
               ),
             ),

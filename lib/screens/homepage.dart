@@ -53,15 +53,26 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: Column(
         children: [
-          TextField(
-              decoration: const InputDecoration(
-                  labelText: 'Ricerca Evento', suffixIcon: Icon(Icons.search)),
-              onChanged: (e) {
-                searchedEventname = e;
-                setState(() {});
-              }),
           const Text(
-              'Public events'), // TODO fare lista apparte o sopra con eventi a cui sono già iscritto
+            'Eventi Pubblici',style: TextStyle(
+              fontSize: 25,
+              fontWeight: FontWeight.bold
+          ),),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextField(
+                decoration: const InputDecoration(
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                        width: 1, color: Colors.black45),
+                  ),
+                    labelText: 'Ricerca Evento', suffixIcon: Icon(Icons.search)),
+                onChanged: (e) {
+                  searchedEventname = e;
+                  setState(() {});
+                }),
+          ),
+           // TODO fare lista apparte o sopra con eventi a cui sono già iscritto
           StreamBuilder(
             builder: (context, snapshot) {
               final cardList = <Card>[];
@@ -73,8 +84,8 @@ class _MyHomePageState extends State<MyHomePage> {
                     snapshot.data!.snapshot.value as Map);
                 cardList.addAll(allEvents.entries
                     .where((element) => element.value['name']
-                        .toString()
-                        .contains(searchedEventname))
+                        .toString().toLowerCase()
+                        .contains(searchedEventname.toLowerCase()))
                     .map((e) {
                   final event =
                       BikeEvent.fromDB(Map<String, dynamic>.from(e.value));

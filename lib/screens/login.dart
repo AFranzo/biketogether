@@ -49,7 +49,7 @@ class Authentication {
     if (user != null) {
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(
-          builder: (context) => MyHomePage(title: "biketogether"),
+          builder: (context) => MyHomePage(title: "Biketogether"),
         ),
       );
     }

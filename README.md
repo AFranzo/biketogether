@@ -1,16 +1,16 @@
-# biketogether
+# biketoger
 
-A new Flutter project.
+Repositoty dell'applicazione Biketogether sviluppata dal gruppo troubleshooters come progetto per il corso di Ingegneria del Software 23/24 .
 
-## Getting Started
+## Releases
+### Canary
+La versione Canary dell'applicazione è disponibile tra le Release, essa è marcata con il tag `Latest`. Questa versione dell'applicazione rappresenta l'ultimo stato buildato dal branch `master` che contiene la versione più aggiornata.
+Tuttavia, essendo l'ultima versione, c'è la possibilità della presenza di bug.
+### Versione 1.0
+La prima versione dell'applicazione è disponibile tra le Releases della repository con il tag `v1.0`. In questa versione la chat non è ancora stata imlpementata pertanto la relativa schermata sarà bianca.
 
-This project is a starting point for a Flutter application.
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Contributors
+- Franzo Andrea 
+- Piazzon Marco
+- Scaggiante Federico

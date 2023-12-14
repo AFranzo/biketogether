@@ -19,7 +19,7 @@ class ChatMessage {
         text: data['text'],
         creatorName: data['creatorName'],
         creatorUid: data['creatorUid'],
-        timestamp: DateTime.now(),
+        timestamp: DateTime.fromMillisecondsSinceEpoch(data['timestamp']),
         urlSenderAvatar: data['urlSenderAvatar']);
   }
 
@@ -28,7 +28,7 @@ class ChatMessage {
       'text': msg.text,
       'creatorUid': msg.creatorUid,
       'creatorName': msg.creatorName,
-      'timestamp': msg.timestamp,
+      'timestamp': msg.timestamp.millisecondsSinceEpoch,
       'urlSenderAvatar': msg.urlSenderAvatar
     });
   }

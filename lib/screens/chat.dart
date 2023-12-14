@@ -1,32 +1,46 @@
 /* Screen of the chat page*/
-//TODO to implement
 import 'package:biketogether/modules/message.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 
 class chatMessageUtil extends StatelessWidget {
-  const chatMessageUtil({Key? key, required this.msg, required this.isAuthor})
+  const chatMessageUtil(
+      {Key? key,
+      required this.msg,
+      required this.isAuthor,
+      required this.isCreator})
       : super(key: key);
   final ChatMessage msg;
   final bool isAuthor;
+  final bool isCreator;
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding:
-          EdgeInsets.fromLTRB(isAuthor ? 64 : 16, 4, isAuthor ? 16 : 64, 4),
+          EdgeInsets.all(4),
       child: Row(
         children: [
           !isAuthor
               ? CircleAvatar(
-                  radius: 32,
+                  radius: 26,
                   backgroundColor: Colors.blueGrey,
-                  child: CircleAvatar(
-                    radius: 30,
-                    backgroundImage: NetworkImage(msg.urlSenderAvatar),
+                  child: Badge(
+                    backgroundColor: Colors.amberAccent,
+                    alignment: Alignment.bottomLeft,
+                    offset: Offset(-10, 10),
+                    isLabelVisible: isCreator,
+                    largeSize: 22,
+                    label: Text('Admin', style:TextStyle(
+                      color: Colors.black
+                    ),),
+                    child: CircleAvatar(
+                      radius: 23,
+                      backgroundImage: NetworkImage(msg.urlSenderAvatar),
+                    ),
                   ))
-              : Container(),
+              : Spacer(),
           Expanded(
             child: Align(
               alignment:
@@ -38,7 +52,7 @@ class chatMessageUtil extends StatelessWidget {
                         : Colors.grey,
                     borderRadius: BorderRadius.circular(16)),
                 child: Padding(
-                  padding: const EdgeInsets.all(8),
+                  padding: const EdgeInsets.only(top: 2, left: 4, right: 4),
                   child: Column(
                     children: [
                       !isAuthor
@@ -63,19 +77,23 @@ class chatMessageUtil extends StatelessWidget {
 }
 
 class ChatPage extends StatefulWidget {
-  const ChatPage({super.key, required this.eventId});
+  const ChatPage(
+      {super.key, required this.eventId, required this.eventcreatorId});
 
   final String eventId;
+  final String eventcreatorId;
 
   @override
-  State<ChatPage> createState() => _ChatPageState(eventId: this.eventId);
+  State<ChatPage> createState() => _ChatPageState(
+      eventId: this.eventId, eventCreatorId: this.eventcreatorId);
 }
 
 class _ChatPageState extends State<ChatPage> {
   String eventId;
+  String eventCreatorId;
   final textController = TextEditingController();
 
-  _ChatPageState({required this.eventId});
+  _ChatPageState({required this.eventId, required this.eventCreatorId});
 
   @override
   Widget build(BuildContext context) {
@@ -108,9 +126,11 @@ class _ChatPageState extends State<ChatPage> {
                   });
                   messageList.addAll(sortedMessages.map((message) {
                     return chatMessageUtil(
-                        msg: message,
-                        isAuthor: FirebaseAuth.instance.currentUser!.uid ==
-                            message.creatorUid);
+                      msg: message,
+                      isAuthor: FirebaseAuth.instance.currentUser!.uid ==
+                          message.creatorUid,
+                      isCreator: message.creatorUid == eventCreatorId,
+                    );
                   }));
                 }
                 return Expanded(

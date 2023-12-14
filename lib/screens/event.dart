@@ -68,7 +68,7 @@ class _EventPageState extends State<EventPage> {
                                           context,
                                           MaterialPageRoute(
                                               builder: (context) =>
-                                                  ChatPage(eventId: eventID,)));
+                                                  ChatPage(eventId: eventID, eventcreatorId: event.creatorId,)));
                                     },
                                     icon: const Icon(Icons.chat)),
                                 (event.creatorId !=

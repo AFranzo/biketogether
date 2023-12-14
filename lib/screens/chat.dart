@@ -73,6 +73,7 @@ class ChatPage extends StatefulWidget {
 
 class _ChatPageState extends State<ChatPage> {
   String eventId;
+  final textController = TextEditingController();
 
   _ChatPageState({required this.eventId});
 
@@ -118,6 +119,51 @@ class _ChatPageState extends State<ChatPage> {
                   children: messageList,
                 ));
               }),
+          SafeArea(
+            bottom: true,
+            child: Container(
+              decoration: const BoxDecoration(
+                  border: Border(top: BorderSide(color: Colors.black26))),
+              child: TextField(
+                onSubmitted: (msg) {
+                  if (msg != '') {
+                    ChatMessage.sendMessage(
+                        ChatMessage(
+                            text: msg,
+                            creatorName: FirebaseAuth
+                                    .instance.currentUser!.displayName ??
+                                'sender',
+                            creatorUid: FirebaseAuth.instance.currentUser!.uid,
+                            timestamp: DateTime.now(),
+                            urlSenderAvatar: FirebaseAuth
+                                    .instance.currentUser!.photoURL ??
+                                'https://www.pngrepo.com/png/182626/180/user-profile.png'),
+                        eventId);
+                  }
+                  textController.clear();
+                },
+                controller: textController,
+                decoration: InputDecoration(
+                    enabledBorder: OutlineInputBorder(
+                        borderSide: const BorderSide(color: Colors.black12),
+                        borderRadius: BorderRadius.circular(8)),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide.none,
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                    border: InputBorder.none,
+                    suffixIcon: IconButton(
+                      icon: const Icon(Icons.clear),
+                      onPressed: () {
+                        textController.clear();
+                      },
+                    ),
+                    contentPadding:
+                        const EdgeInsets.only(right: 42, left: 16, top: 18),
+                    hintText: 'messaggio'),
+              ),
+            ),
+          )
         ],
       ),
     );

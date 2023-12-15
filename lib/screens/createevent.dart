@@ -90,7 +90,7 @@ class _createEventState extends State<CreateEvent> {
                           child: Row(
                             children: [
                               Icon(path.type ==
-                                      'roadbike' //TODO find better icons
+                                      'Road Bike' //TODO find better icons
                                   ? Icons.electric_bike
                                   : Icons.pedal_bike),
                               const SizedBox(

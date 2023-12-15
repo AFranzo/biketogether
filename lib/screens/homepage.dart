@@ -29,7 +29,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   String searchedEventname = '';
-
+  bool showOld = false;
   @override
   void initState() {}
 
@@ -72,6 +72,13 @@ class _MyHomePageState extends State<MyHomePage> {
                   setState(() {});
                 }),
           ),
+           Row(
+             children: [
+               Text('Eventi passati'),
+               Switch(
+                   splashRadius: 30.0,value: showOld, onChanged: (value)=>setState(() => showOld=value )),
+             ],
+           ),
            // TODO fare lista apparte o sopra con eventi a cui sono già iscritto
           StreamBuilder(
             builder: (context, snapshot) {
@@ -85,7 +92,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 cardList.addAll(allEvents.entries
                     .where((element) => element.value['name']
                         .toString().toLowerCase()
-                        .contains(searchedEventname.toLowerCase()))
+                        .contains(searchedEventname.toLowerCase()) && (DateTime.fromMillisecondsSinceEpoch(element.value['date']).isAfter(DateTime.now()) || showOld))
                     .map((e) {
                   final event =
                       BikeEvent.fromDB(Map<String, dynamic>.from(e.value));

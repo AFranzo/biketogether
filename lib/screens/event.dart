@@ -34,7 +34,7 @@ class _EventPageState extends State<EventPage> {
         stream:
             FirebaseDatabase.instance.ref().child('events/$eventID').onValue,
         builder: (context, snapshot) {
-          if (snapshot.hasData) {
+          if (snapshot.hasData && snapshot.data!.snapshot.value != null) {
             final event = BikeEvent.fromDB(Map<String, dynamic>.from(
                 snapshot.data!.snapshot.value as Map));
             return Scaffold(
@@ -68,7 +68,7 @@ class _EventPageState extends State<EventPage> {
                                           context,
                                           MaterialPageRoute(
                                               builder: (context) =>
-                                                  ChatPage()));
+                                                  const ChatPage()));
                                     },
                                     icon: const Icon(Icons.chat)),
                                 (event.creatorId !=
@@ -79,8 +79,8 @@ class _EventPageState extends State<EventPage> {
                                               context: context,
                                               builder: (context) {
                                                 return AlertDialog(
-                                                  title:
-                                                      Text('Abbandona evento'),
+                                                  title: const Text(
+                                                      'Abbandona evento'),
                                                   content: Text(
                                                       'vuoi abbandonare l\'evento "${event.name}"?'),
                                                   actions: [
@@ -90,7 +90,8 @@ class _EventPageState extends State<EventPage> {
                                                             .instance
                                                             .ref()
                                                             .child(
-                                                                '/events/$eventID/partecipants/${FirebaseAuth.instance.currentUser!.uid}').remove();
+                                                                '/events/$eventID/partecipants/${FirebaseAuth.instance.currentUser!.uid}')
+                                                            .remove();
                                                         Navigator.of(context)
                                                             .pop();
                                                       },
@@ -114,7 +115,7 @@ class _EventPageState extends State<EventPage> {
                                     : PopupMenuButton(
                                         itemBuilder: (context) => [
                                               PopupMenuItem(
-                                                child: Text('Modifica'),
+                                                child: const Text('Modifica'),
                                                 onTap: () {
                                                   showDialog<void>(
                                                       context: context,
@@ -173,6 +174,58 @@ class _EventPageState extends State<EventPage> {
                                                       });
                                                 },
                                               ),
+                                              PopupMenuItem(
+                                                child: const Text(
+                                                  'Elimina',
+                                                  style: TextStyle(
+                                                      color: Colors.red),
+                                                ),
+                                                onTap: () {
+                                                  showDialog(
+                                                      context: context,
+                                                      builder: (context) {
+                                                        return AlertDialog(
+                                                          title: const Text(
+                                                              'Eliminazione evento'),
+                                                          content: Text(
+                                                              'vuoi eliminare l\'evento:\n${event.name}?'),
+                                                          actions: [
+                                                            ElevatedButton(
+                                                              onPressed: () {
+
+                                                                ScaffoldMessenger.of(context).showSnackBar(
+                                                                  const SnackBar(
+                                                                      backgroundColor: Colors.green,
+                                                                      content: Text(
+                                                                          'Evento eliminato')),
+                                                                );
+                                                                Navigator.pushReplacement(
+                                                                    context,
+                                                                    MaterialPageRoute(
+                                                                        builder:
+                                                                            (context) =>
+                                                                                const MyHomePage(title: 'Biketogether')));
+                                                                FirebaseDatabase
+                                                                    .instance
+                                                                    .ref(
+                                                                        'events/$eventID')
+                                                                    .remove();
+                                                              },
+                                                              child: const Text(
+                                                                  'Elimina',style: TextStyle(
+                                                                  color:
+                                                                  Colors.white)),
+                                                              style: ButtonStyle(
+                                                                  backgroundColor:
+                                                                      MaterialStateProperty.all(
+                                                                          Colors
+                                                                              .redAccent)),
+                                                            )
+                                                          ],
+                                                        );
+                                                      });
+                                                },
+                                              )
                                             ])
                               ],
                             )
@@ -240,7 +293,7 @@ class _EventPageState extends State<EventPage> {
                               .child('routes/${event.bikeRouteName}')
                               .once(),
                           builder: (context, snapshot) {
-                            if (snapshot.hasData) {
+                            if (snapshot.hasData ) {
                               final route = BikeRoute.fromDB(
                                   Map<String, dynamic>.from(
                                       snapshot.data!.snapshot.value as Map));

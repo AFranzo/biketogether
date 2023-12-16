@@ -23,6 +23,7 @@ class MyHomePage extends StatefulWidget {
   // always marked "final".
 
   final String title;
+
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
@@ -30,6 +31,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   String searchedEventname = '';
   bool showOld = false;
+
   @override
   void initState() {}
 
@@ -54,32 +56,32 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Column(
         children: [
           const Text(
-            'Eventi Pubblici',style: TextStyle(
-              fontSize: 25,
-              fontWeight: FontWeight.bold
-          ),),
+            'Eventi Pubblici',
+            style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+          ),
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: TextField(
                 decoration: const InputDecoration(
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                        width: 1, color: Colors.black45),
-                  ),
-                    labelText: 'Ricerca Evento', suffixIcon: Icon(Icons.search)),
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(width: 1, color: Colors.black45),
+                    ),
+                    labelText: 'Ricerca Evento',
+                    suffixIcon: Icon(Icons.search)),
                 onChanged: (e) {
                   searchedEventname = e;
                   setState(() {});
                 }),
           ),
-           Row(
-             children: [
-               Text('Eventi passati'),
-               Switch(
-                   splashRadius: 30.0,value: showOld, onChanged: (value)=>setState(() => showOld=value )),
-             ],
-           ),
-           // TODO fare lista apparte o sopra con eventi a cui sono già iscritto
+          Row(
+            children: [
+              Text('Eventi passati'),
+              Switch(
+                  splashRadius: 30.0,
+                  value: showOld,
+                  onChanged: (value) => setState(() => showOld = value)),
+            ],
+          ),
           StreamBuilder(
             builder: (context, snapshot) {
               final cardList = <Card>[];
@@ -90,9 +92,16 @@ class _MyHomePageState extends State<MyHomePage> {
                 final allEvents = Map<String, dynamic>.from(
                     snapshot.data!.snapshot.value as Map);
                 cardList.addAll(allEvents.entries
-                    .where((element) => element.value['name']
-                        .toString().toLowerCase()
-                        .contains(searchedEventname.toLowerCase()) && (DateTime.fromMillisecondsSinceEpoch(element.value['date']).isAfter(DateTime.now()) || showOld))
+                    .where((element) =>
+                        element.value['name']
+                            .toString()
+                            .toLowerCase()
+                            .contains(searchedEventname.toLowerCase()) &&
+                        (!DateTime.fromMillisecondsSinceEpoch(
+                                    element.value['date'])
+                                .isBefore(DateTime.now()) ||
+                            showOld) &&
+                        !(element.value['private'] as bool))
                     .map((e) {
                   final event =
                       BikeEvent.fromDB(Map<String, dynamic>.from(e.value));

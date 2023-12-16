@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:biketogether/modules/bike_event.dart';
 import 'package:biketogether/modules/bike_route.dart';
 import 'package:biketogether/screens/homepage.dart';
@@ -17,10 +19,13 @@ class _createEventState extends State<CreateEvent> {
   String _selectedPath = '';
   final _form = GlobalKey<FormState>();
   Map<String, dynamic> formFields = {};
+  bool privConfig = false;
   late DateTime first;
+
   ///Date controller
   final TextEditingController _dateController = TextEditingController();
   final TextEditingController _timeC = TextEditingController();
+
   @override
   void initState() {
     super.initState();
@@ -30,13 +35,14 @@ class _createEventState extends State<CreateEvent> {
   ///Time
   TimeOfDay timeOfDay = TimeOfDay.now();
 
-  Future displayTimePicker(BuildContext context) async{
+  Future displayTimePicker(BuildContext context) async {
     var time = await showTimePicker(context: context, initialTime: timeOfDay);
 
-    if(time != null){
+    if (time != null) {
       setState(() {
         _timeC.text = "${time.hour}:${time.minute}";
-        DateTime finalDate = DateTime(first.year, first.month, first.day, time.hour, time.minute);
+        DateTime finalDate = DateTime(
+            first.year, first.month, first.day, time.hour, time.minute);
         formFields.update('date', (value) => finalDate.millisecondsSinceEpoch,
             ifAbsent: () => finalDate.millisecondsSinceEpoch);
       });
@@ -170,50 +176,61 @@ class _createEventState extends State<CreateEvent> {
                   child: Padding(
                     padding: const EdgeInsets.only(left: 30, right: 30),
                     child: TextField(
-                      controller: _timeC,
-                      decoration: const InputDecoration(
-                        labelText: 'Orario Evento',
-                        filled: true,
-                        prefixIcon: Icon(Icons.alarm), //TODO find better icons
-                        enabledBorder:
-                        OutlineInputBorder(borderSide: BorderSide.none),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.blue),
+                        controller: _timeC,
+                        decoration: const InputDecoration(
+                          labelText: 'Orario Evento',
+                          filled: true,
+                          prefixIcon: Icon(Icons.alarm),
+                          //TODO find better icons
+                          enabledBorder:
+                              OutlineInputBorder(borderSide: BorderSide.none),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.blue),
+                          ),
                         ),
-                      ),
-                      readOnly: true,
-                      onTap: (){
-                        if(_dateController.text.isEmpty){
-                          showDialog<void>(
-                            context: context,
-                            barrierDismissible: false, // user must tap button!
-                            builder: (BuildContext context) {
-                              return AlertDialog(
-                                title: const Text('Errore'),
-                                content: const SingleChildScrollView(
-                                  child: ListBody(
-                                    children: <Widget>[
-                                      Text('Inserisci prima la data.'),
-                                    ],
+                        readOnly: true,
+                        onTap: () {
+                          if (_dateController.text.isEmpty) {
+                            showDialog<void>(
+                              context: context,
+                              barrierDismissible: false,
+                              // user must tap button!
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: const Text('Errore'),
+                                  content: const SingleChildScrollView(
+                                    child: ListBody(
+                                      children: <Widget>[
+                                        Text('Inserisci prima la data.'),
+                                      ],
+                                    ),
                                   ),
-                                ),
-                                actions: <Widget>[
-                                  TextButton(
-                                    child: const Text('Ok'),
-                                    onPressed: () {
-                                      Navigator.of(context).pop();
-                                    },
-                                  ),
-                                ],
-                              );
-                            },
-                          );
-                        }else {
-                          displayTimePicker(context);
-                        }
-                      }
-                    ),
+                                  actions: <Widget>[
+                                    TextButton(
+                                      child: const Text('Ok'),
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          } else {
+                            displayTimePicker(context);
+                          }
+                        }),
                   ),
+                ),
+                Row(
+                  children: [
+                    Text('Evento privato'),
+                    Switch(
+                        splashRadius: 30.0,
+                        value: privConfig,
+                        onChanged: (value) =>
+                            setState(() => privConfig = value)),
+                  ],
                 ),
                 Padding(
                     padding: const EdgeInsets.symmetric(vertical: 16),
@@ -237,8 +254,11 @@ class _createEventState extends State<CreateEvent> {
                               creatorName: FirebaseAuth
                                   .instance.currentUser!.displayName
                                   .toString(),
+                              passcode: String.fromCharCodes(List.generate(
+                                  5, (index) => Random().nextInt(33) + 89)),
                               partecipants: [],
-                              description: formFields['desc'] ?? ''));
+                              description: formFields['desc'] ?? '',
+                              private: privConfig));
 
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
@@ -246,9 +266,14 @@ class _createEventState extends State<CreateEvent> {
                                 content: Text(
                                     'Evento Creato')), // TODO check if event is created maybe and report success
                           );
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => MyHomePage(title: 'Biketogether')) );
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      MyHomePage(title: 'Biketogether')));
                         }
                       },
+
                       child: const Text(
                           'Submit'), // TODO switch to homepage after submit
                     ))

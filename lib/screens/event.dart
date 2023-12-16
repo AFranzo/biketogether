@@ -8,6 +8,7 @@ import 'package:biketogether/screens/homepage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class EventPage extends StatefulWidget {
   const EventPage({super.key, required this.eventname});
@@ -51,13 +52,13 @@ class _EventPageState extends State<EventPage> {
                               .contains(FirebaseAuth.instance.currentUser!.uid))
                           ? IconButton(
                               onPressed: () {
-                                FirebaseDatabase.instance
-                                    .ref('/events/$eventID/')
-                                    .child('partecipants')
-                                    .update({
-                                  FirebaseAuth.instance.currentUser!.uid:
-                                      DateTime.now().millisecondsSinceEpoch
-                                });
+                                  FirebaseDatabase.instance
+                                      .ref('/events/$eventID/')
+                                      .child('partecipants')
+                                      .update({
+                                    FirebaseAuth.instance.currentUser!.uid:
+                                        DateTime.now().millisecondsSinceEpoch
+                                  });
                               },
                               icon: const Icon(Icons.add))
                           : Row(
@@ -192,10 +193,13 @@ class _EventPageState extends State<EventPage> {
                                                           actions: [
                                                             ElevatedButton(
                                                               onPressed: () {
-
-                                                                ScaffoldMessenger.of(context).showSnackBar(
+                                                                ScaffoldMessenger.of(
+                                                                        context)
+                                                                    .showSnackBar(
                                                                   const SnackBar(
-                                                                      backgroundColor: Colors.green,
+                                                                      backgroundColor:
+                                                                          Colors
+                                                                              .green,
                                                                       content: Text(
                                                                           'Evento eliminato')),
                                                                 );
@@ -212,9 +216,10 @@ class _EventPageState extends State<EventPage> {
                                                                     .remove();
                                                               },
                                                               child: const Text(
-                                                                  'Elimina',style: TextStyle(
-                                                                  color:
-                                                                  Colors.white)),
+                                                                  'Elimina',
+                                                                  style: TextStyle(
+                                                                      color: Colors
+                                                                          .white)),
                                                               style: ButtonStyle(
                                                                   backgroundColor:
                                                                       MaterialStateProperty.all(
@@ -225,7 +230,8 @@ class _EventPageState extends State<EventPage> {
                                                         );
                                                       });
                                                 },
-                                              )
+                                              ),
+
                                             ])
                               ],
                             )
@@ -285,6 +291,17 @@ class _EventPageState extends State<EventPage> {
                       //   'creato da ${event.creatorName} il ${event.createAt.toString().substring(0, 10)}',
                       //   style: const TextStyle(fontSize: 20),
                       // ),
+                      event.private?ElevatedButton(onPressed: (){
+                        Clipboard.setData(ClipboardData(text: event.passcode??'Errore codice evento'));
+                      }, child: Row(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text('Codice Evento: ${event.passcode}',textScaleFactor: 1.35,),
+                          ),
+                          Icon(Icons.copy)
+                        ],
+                      )):Container(),
                       const Padding(padding: EdgeInsets.only(bottom: 20.0)),
                       const Divider(),
                       FutureBuilder(
@@ -293,7 +310,7 @@ class _EventPageState extends State<EventPage> {
                               .child('routes/${event.bikeRouteName}')
                               .once(),
                           builder: (context, snapshot) {
-                            if (snapshot.hasData ) {
+                            if (snapshot.hasData) {
                               final route = BikeRoute.fromDB(
                                   Map<String, dynamic>.from(
                                       snapshot.data!.snapshot.value as Map));

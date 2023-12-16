@@ -12,6 +12,8 @@ class BikeEvent {
   final DateTime createAt;
   final String name;
   final String? description;
+  final String? passcode;
+  bool private;
   final List<String> partecipants;
 
   BikeEvent(
@@ -22,6 +24,8 @@ class BikeEvent {
       required this.createAt,
       required this.name,
       required this.description,
+      required this.private,
+      this.passcode,
       required this.partecipants});
 
 
@@ -31,12 +35,14 @@ class BikeEvent {
   static void insertEvent(BikeEvent b) {
     FirebaseDatabase.instance.ref('events').push().set({
       'creatorName': b.creatorName,
+      'private': b.private,
       'creatorId': b.creatorId,
       'createdAt': b.createAt.millisecondsSinceEpoch,
       'route': b.bikeRouteName,
       'date': b.date.millisecondsSinceEpoch,
       'name': b.name,
       'description': b.description,
+      'passcode': b.passcode,
       'partecipants':{
         FirebaseAuth.instance.currentUser!.uid:DateTime.now().millisecondsSinceEpoch
       }
@@ -59,7 +65,7 @@ class BikeEvent {
         createAt: DateTime.fromMillisecondsSinceEpoch(data['createdAt']),
         name: data['name'] ?? 'name',
         partecipants: parts,
-        description: data['description'] ?? '');
+        description: data['description'] ?? '', private: data['private']??false, passcode: data['passcode']);
 
   }
 }

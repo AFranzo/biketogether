@@ -54,25 +54,24 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Column(
         children: [
           const Text(
-            'Eventi Pubblici',style: TextStyle(
-              fontSize: 25,
-              fontWeight: FontWeight.bold
-          ),),
+            'Eventi Pubblici',
+            style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+          ),
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: TextField(
                 decoration: const InputDecoration(
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                        width: 1, color: Colors.black45),
-                  ),
-                    labelText: 'Ricerca Evento', suffixIcon: Icon(Icons.search)),
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(width: 1, color: Colors.black45),
+                    ),
+                    labelText: 'Ricerca Evento',
+                    suffixIcon: Icon(Icons.search)),
                 onChanged: (e) {
                   searchedEventname = e;
                   setState(() {});
                 }),
           ),
-           // TODO fare lista apparte o sopra con eventi a cui sono già iscritto
+          // TODO fare lista apparte o sopra con eventi a cui sono già iscritto
           StreamBuilder(
             builder: (context, snapshot) {
               final cardList = <Card>[];
@@ -84,7 +83,8 @@ class _MyHomePageState extends State<MyHomePage> {
                     snapshot.data!.snapshot.value as Map);
                 cardList.addAll(allEvents.entries
                     .where((element) => element.value['name']
-                        .toString().toLowerCase()
+                        .toString()
+                        .toLowerCase()
                         .contains(searchedEventname.toLowerCase()))
                     .map((e) {
                   final event =
@@ -133,12 +133,20 @@ class _MyHomePageState extends State<MyHomePage> {
       drawer: Drawer(
         child: Column(
           children: [
+            AppBar(
+              backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+              title: Text(widget.title),
+            ),
             Expanded(
               child: ListView(
                 children: [
+                  const ListTile(
+                    leading: Icon(Icons.person),
+                    title: Text('Username'),
+                  ),
                   ListTile(
                     leading: const Icon(Icons.add_circle),
-                    title: const Text('Creata Evento'),
+                    title: const Text('Nuovo Evento'),
                     onTap: () {
                       Navigator.push(
                           context,

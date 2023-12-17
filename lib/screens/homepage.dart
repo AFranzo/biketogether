@@ -51,13 +51,25 @@ class _MyHomePageState extends State<MyHomePage> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
+        title: Text('Eventi pubblici'),
       ),
       body: Column(
         children: [
-          const Text(
-            'Eventi Pubblici',
-            style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+          Padding(
+            padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  'Esami passati?',
+                  style: TextStyle(fontSize: 20),
+                ),
+                Switch(
+                    splashRadius: 30.0,
+                    value: showOld,
+                    onChanged: (value) => setState(() => showOld = value)),
+              ],
+            ),
           ),
           Padding(
             padding: const EdgeInsets.all(8.0),
@@ -72,15 +84,6 @@ class _MyHomePageState extends State<MyHomePage> {
                   searchedEventname = e;
                   setState(() {});
                 }),
-          ),
-          Row(
-            children: [
-              Text('Eventi passati'),
-              Switch(
-                  splashRadius: 30.0,
-                  value: showOld,
-                  onChanged: (value) => setState(() => showOld = value)),
-            ],
           ),
           StreamBuilder(
             builder: (context, snapshot) {

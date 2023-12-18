@@ -210,6 +210,37 @@ class _EventPageState extends State<EventPage> {
                                                                             DateTime(2101)); // TODO: make it update the event date like in createevent
                                                                   },
                                                                 ),
+                                                                TextField(
+                                                                  decoration:
+                                                                      const InputDecoration(
+                                                                    labelText:
+                                                                        'Orario Evento',
+                                                                    filled:
+                                                                        true,
+                                                                    prefixIcon:
+                                                                        Icon(Icons
+                                                                            .alarm),
+                                                                    enabledBorder:
+                                                                        OutlineInputBorder(
+                                                                            borderSide:
+                                                                                BorderSide.none),
+                                                                    focusedBorder:
+                                                                        OutlineInputBorder(
+                                                                      borderSide:
+                                                                          BorderSide(
+                                                                              color: Colors.blue),
+                                                                    ),
+                                                                  ),
+                                                                  readOnly:
+                                                                      true,
+                                                                  onTap: () {
+                                                                    showTimePicker(
+                                                                        context:
+                                                                            context,
+                                                                        initialTime:
+                                                                            TimeOfDay.now()); // TODO: make it update the event date like in createevent
+                                                                  },
+                                                                ),
                                                               ],
                                                             ),
                                                           ),

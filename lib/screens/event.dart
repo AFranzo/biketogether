@@ -127,7 +127,9 @@ class _EventPageState extends State<EventPage> {
                                                           content: Form(
                                                             key: _form,
                                                             child: Column(
-                                                              mainAxisSize: MainAxisSize.min,
+                                                              mainAxisSize:
+                                                                  MainAxisSize
+                                                                      .min,
                                                               children: [
                                                                 TextFormField(
                                                                     decoration: const InputDecoration(
@@ -194,7 +196,19 @@ class _EventPageState extends State<EventPage> {
                                                                   ),
                                                                   readOnly:
                                                                       true,
-                                                                  onTap: () {},
+                                                                  onTap: () {
+                                                                    showDatePicker(
+                                                                        context:
+                                                                            context,
+                                                                        initialDate:
+                                                                            DateTime
+                                                                                .now(),
+                                                                        firstDate:
+                                                                            DateTime(
+                                                                                2000),
+                                                                        lastDate:
+                                                                            DateTime(2101)); // TODO: make it update the event date like in createevent
+                                                                  },
                                                                 ),
                                                               ],
                                                             ),

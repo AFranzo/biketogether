@@ -135,7 +135,21 @@ class _MyHomePageState extends State<MyHomePage> {
           children: [
             AppBar(
               backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-              title: Text(widget.title),
+              title: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Image.asset(
+                    "assets/logo64pxn.png",
+                    height: 32,
+                    width: 32,
+                  ),
+                  const Padding(
+                    padding: EdgeInsets.only(right: 8.0),
+                  ),
+                  Text(widget.title),
+                ],
+              ),
+              automaticallyImplyLeading: false,
             ),
             Expanded(
               child: ListView(

@@ -90,7 +90,8 @@ class _EventPageState extends State<EventPage> {
                                                             .instance
                                                             .ref()
                                                             .child(
-                                                                '/events/$eventID/partecipants/${FirebaseAuth.instance.currentUser!.uid}').remove();
+                                                                '/events/$eventID/partecipants/${FirebaseAuth.instance.currentUser!.uid}')
+                                                            .remove();
                                                         Navigator.of(context)
                                                             .pop();
                                                       },
@@ -125,7 +126,9 @@ class _EventPageState extends State<EventPage> {
                                                               'Modifica Evento'),
                                                           content: Form(
                                                             key: _form,
-                                                            child:
+                                                            child: Column(
+                                                              mainAxisSize: MainAxisSize.min,
+                                                              children: [
                                                                 TextFormField(
                                                                     decoration: const InputDecoration(
                                                                         border:
@@ -150,6 +153,51 @@ class _EventPageState extends State<EventPage> {
                                                                           ifAbsent: () =>
                                                                               value);
                                                                     }),
+                                                                TextFormField(
+                                                                    decoration: const InputDecoration(
+                                                                        border:
+                                                                            UnderlineInputBorder(),
+                                                                        labelText:
+                                                                            'Descrizione dell\'evento'),
+                                                                    initialValue:
+                                                                        event
+                                                                            .description,
+                                                                    validator:
+                                                                        (value) {
+                                                                      formFields.update(
+                                                                          'event_description',
+                                                                          (e) =>
+                                                                              value,
+                                                                          ifAbsent: () =>
+                                                                              value);
+                                                                    }),
+                                                                TextField(
+                                                                  decoration:
+                                                                      const InputDecoration(
+                                                                    labelText:
+                                                                        'Data Evento',
+                                                                    filled:
+                                                                        true,
+                                                                    prefixIcon:
+                                                                        Icon(Icons
+                                                                            .calendar_today),
+                                                                    enabledBorder:
+                                                                        OutlineInputBorder(
+                                                                            borderSide:
+                                                                                BorderSide.none),
+                                                                    focusedBorder:
+                                                                        OutlineInputBorder(
+                                                                      borderSide:
+                                                                          BorderSide(
+                                                                              color: Colors.blue),
+                                                                    ),
+                                                                  ),
+                                                                  readOnly:
+                                                                      true,
+                                                                  onTap: () {},
+                                                                ),
+                                                              ],
+                                                            ),
                                                           ),
                                                           actions: [
                                                             ElevatedButton(

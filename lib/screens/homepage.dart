@@ -116,7 +116,7 @@ class _MyHomePageState extends State<MyHomePage> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 const Text(
-                  'Esami passati?',
+                  'Eventi passati',
                   style: TextStyle(fontSize: 20),
                 ),
                 Switch(
@@ -207,12 +207,20 @@ class _MyHomePageState extends State<MyHomePage> {
       drawer: Drawer(
         child: Column(
           children: [
+            AppBar(
+              backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+              title: Text(widget.title),
+            ),
             Expanded(
               child: ListView(
                 children: [
+                  const ListTile(
+                    leading: Icon(Icons.person),
+                    title: Text('Username'),
+                  ),
                   ListTile(
                     leading: const Icon(Icons.add_circle),
-                    title: const Text('Creata Evento'),
+                    title: const Text('Nuovo Evento'),
                     onTap: () {
                       Navigator.push(
                           context,

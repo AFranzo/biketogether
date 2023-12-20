@@ -6,6 +6,7 @@ import 'package:biketogether/screens/personalevents.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../main.dart';
 import 'login.dart';
@@ -61,6 +62,9 @@ class _MyHomePageState extends State<MyHomePage> {
               builder: (context) => AlertDialog(
                 title: const Text('Codice Evento'),
                 content: TextField(
+                  inputFormatters: [
+                    LengthLimitingTextInputFormatter(5)
+                  ],
                   decoration: const InputDecoration(
                     hintText:'Inserisci il codice di 5 lettere'
                   ),

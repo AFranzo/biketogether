@@ -51,7 +51,62 @@ class _MyHomePageState extends State<MyHomePage> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
-        title: Text('Eventi pubblici'),
+        title: const Text('Eventi pubblici'),
+      ),
+      floatingActionButton: FloatingActionButton(
+        child: const Icon(Icons.lock_open_outlined),
+        onPressed: () {
+          showDialog(
+              context: context,
+              builder: (context) => AlertDialog(
+                title: const Text('Codice Evento'),
+                content: TextField(
+                  decoration: const InputDecoration(
+                    hintText:'Inserisci il codice di 5 lettere'
+                  ),
+                  onSubmitted: (value) {
+                    FirebaseDatabase.instance
+                        .ref()
+                        .child('events')
+                        .orderByChild('passcode')
+                        .equalTo(value)
+                        .get()
+                        .then((value) {
+                      if (!value.exists) {
+                        Navigator.of(context).pop();
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                              backgroundColor: Colors.red,
+                              content: Text(
+                                  'Codice invalido')),
+                        );
+                      } else {
+                        try{
+                        FirebaseDatabase.instance
+                            .ref(
+                            'events/${value.children.first.key}/partecipants')
+                            .update({
+                          FirebaseAuth.instance.currentUser!.uid:
+                          DateTime.now().millisecondsSinceEpoch
+                        });
+                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                          backgroundColor: Colors.green,
+                          content: Text("Partecipazione effettuata"),
+                        ));
+
+                        ;} catch(e){
+                          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                            backgroundColor: Colors.redAccent,
+                            content: Text("Errore"),
+                          ));
+                        }
+                        Navigator.of(context).pop();
+                      }
+                    });
+                  },
+                ),
+              ));
+        },
       ),
       body: Column(
         children: [
@@ -162,7 +217,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => CreateEvent()));
+                              builder: (context) => const CreateEvent()));
                     },
                   ),
                   ListTile(
@@ -172,7 +227,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => MyEventsPage()));
+                              builder: (context) => const MyEventsPage()));
                     },
                   )
                 ],

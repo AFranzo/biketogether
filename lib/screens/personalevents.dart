@@ -21,46 +21,6 @@ class _MyEventsPageState extends State<MyEventsPage> {
           backgroundColor: Theme.of(context).colorScheme.inversePrimary,
           title: const Text('I Miei Eventi'),
         ),
-        floatingActionButton: FloatingActionButton(
-          child: Icon(Icons.lock_open_outlined),
-          onPressed: () {
-            showDialog(
-                context: context,
-                builder: (context) => AlertDialog(
-                      title: Text('Codice Evento'),
-                      content: TextField(
-                        onSubmitted: (value) {
-                          FirebaseDatabase.instance
-                              .ref()
-                              .child('events')
-                              .orderByChild('passcode')
-                              .equalTo(value)
-                              .get()
-                              .then((value) {
-                                print(value);
-                            if (!value.exists) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                    backgroundColor: Colors.red,
-                                    content: Text(
-                                        'Codice invalido')),
-                              );
-                            } else {
-                              FirebaseDatabase.instance
-                                  .ref(
-                                      'events/${value.children.first.key}/partecipants')
-                                  .update({
-                                FirebaseAuth.instance.currentUser!.uid:
-                                    DateTime.now().millisecondsSinceEpoch
-                              });
-                              Navigator.of(context).pop();
-                            }
-                          });
-                        },
-                      ),
-                    ));
-          },
-        ),
         body: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [

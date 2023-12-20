@@ -127,7 +127,11 @@ class _EventPageState extends State<EventPage> {
                                                               'Modifica Evento'),
                                                           content: Form(
                                                             key: _form,
-                                                            child:
+                                                            child: Column(
+                                                              mainAxisSize:
+                                                                  MainAxisSize
+                                                                      .min,
+                                                              children: [
                                                                 TextFormField(
                                                                     decoration: const InputDecoration(
                                                                         border:
@@ -152,6 +156,94 @@ class _EventPageState extends State<EventPage> {
                                                                           ifAbsent: () =>
                                                                               value);
                                                                     }),
+                                                                TextFormField(
+                                                                    decoration: const InputDecoration(
+                                                                        border:
+                                                                            UnderlineInputBorder(),
+                                                                        labelText:
+                                                                            'Descrizione dell\'evento'),
+                                                                    initialValue:
+                                                                        event
+                                                                            .description,
+                                                                    validator:
+                                                                        (value) {
+                                                                      formFields.update(
+                                                                          'event_description',
+                                                                          (e) =>
+                                                                              value,
+                                                                          ifAbsent: () =>
+                                                                              value);
+                                                                    }),
+                                                                TextField(
+                                                                  decoration:
+                                                                      const InputDecoration(
+                                                                    labelText:
+                                                                        'Data Evento',
+                                                                    filled:
+                                                                        true,
+                                                                    prefixIcon:
+                                                                        Icon(Icons
+                                                                            .calendar_today),
+                                                                    enabledBorder:
+                                                                        OutlineInputBorder(
+                                                                            borderSide:
+                                                                                BorderSide.none),
+                                                                    focusedBorder:
+                                                                        OutlineInputBorder(
+                                                                      borderSide:
+                                                                          BorderSide(
+                                                                              color: Colors.blue),
+                                                                    ),
+                                                                  ),
+                                                                  readOnly:
+                                                                      true,
+                                                                  onTap: () {
+                                                                    showDatePicker(
+                                                                        context:
+                                                                            context,
+                                                                        initialDate:
+                                                                            DateTime
+                                                                                .now(),
+                                                                        firstDate:
+                                                                            DateTime(
+                                                                                2000),
+                                                                        lastDate:
+                                                                            DateTime(2101)); // TODO: make it update the event date like in createevent
+                                                                  },
+                                                                ),
+                                                                TextField(
+                                                                  decoration:
+                                                                      const InputDecoration(
+                                                                    labelText:
+                                                                        'Orario Evento',
+                                                                    filled:
+                                                                        true,
+                                                                    prefixIcon:
+                                                                        Icon(Icons
+                                                                            .alarm),
+                                                                    enabledBorder:
+                                                                        OutlineInputBorder(
+                                                                            borderSide:
+                                                                                BorderSide.none),
+                                                                    focusedBorder:
+                                                                        OutlineInputBorder(
+                                                                      borderSide:
+                                                                          BorderSide(
+                                                                              color: Colors.blue),
+                                                                    ),
+                                                                  ),
+                                                                  readOnly:
+                                                                      true,
+                                                                  onTap: () {
+                                                                    showTimePicker(
+                                                                        context:
+                                                                            context,
+                                                                        initialTime:
+                                                                            TimeOfDay.now()); // TODO: make it update the event date like in createevent
+                                                                  },
+                                                                ),
+                                                              ],
+                                                            ),
                                                           ),
                                                           actions: [
                                                             ElevatedButton(

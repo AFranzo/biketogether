@@ -8,6 +8,7 @@ import 'package:biketogether/screens/homepage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class EventPage extends StatefulWidget {
   const EventPage({super.key, required this.eventname});
@@ -34,7 +35,7 @@ class _EventPageState extends State<EventPage> {
         stream:
             FirebaseDatabase.instance.ref().child('events/$eventID').onValue,
         builder: (context, snapshot) {
-          if (snapshot.hasData) {
+          if (snapshot.hasData && snapshot.data!.snapshot.value != null) {
             final event = BikeEvent.fromDB(Map<String, dynamic>.from(
                 snapshot.data!.snapshot.value as Map));
             return Scaffold(
@@ -51,13 +52,13 @@ class _EventPageState extends State<EventPage> {
                               .contains(FirebaseAuth.instance.currentUser!.uid))
                           ? IconButton(
                               onPressed: () {
-                                FirebaseDatabase.instance
-                                    .ref('/events/$eventID/')
-                                    .child('partecipants')
-                                    .update({
-                                  FirebaseAuth.instance.currentUser!.uid:
-                                      DateTime.now().millisecondsSinceEpoch
-                                });
+                                  FirebaseDatabase.instance
+                                      .ref('/events/$eventID/')
+                                      .child('partecipants')
+                                      .update({
+                                    FirebaseAuth.instance.currentUser!.uid:
+                                        DateTime.now().millisecondsSinceEpoch
+                                  });
                               },
                               icon: const Icon(Icons.add))
                           : Row(
@@ -68,7 +69,7 @@ class _EventPageState extends State<EventPage> {
                                           context,
                                           MaterialPageRoute(
                                               builder: (context) =>
-                                                  ChatPage()));
+                                                  const ChatPage()));
                                     },
                                     icon: const Icon(Icons.chat)),
                                 (event.creatorId !=
@@ -79,8 +80,8 @@ class _EventPageState extends State<EventPage> {
                                               context: context,
                                               builder: (context) {
                                                 return AlertDialog(
-                                                  title:
-                                                      Text('Abbandona evento'),
+                                                  title: const Text(
+                                                      'Abbandona evento'),
                                                   content: Text(
                                                       'vuoi abbandonare l\'evento "${event.name}"?'),
                                                   actions: [
@@ -90,7 +91,8 @@ class _EventPageState extends State<EventPage> {
                                                             .instance
                                                             .ref()
                                                             .child(
-                                                                '/events/$eventID/partecipants/${FirebaseAuth.instance.currentUser!.uid}').remove();
+                                                                '/events/$eventID/partecipants/${FirebaseAuth.instance.currentUser!.uid}')
+                                                            .remove();
                                                         Navigator.of(context)
                                                             .pop();
                                                       },
@@ -114,7 +116,7 @@ class _EventPageState extends State<EventPage> {
                                     : PopupMenuButton(
                                         itemBuilder: (context) => [
                                               PopupMenuItem(
-                                                child: Text('Modifica'),
+                                                child: const Text('Modifica'),
                                                 onTap: () {
                                                   showDialog<void>(
                                                       context: context,
@@ -173,6 +175,63 @@ class _EventPageState extends State<EventPage> {
                                                       });
                                                 },
                                               ),
+                                              PopupMenuItem(
+                                                child: const Text(
+                                                  'Elimina',
+                                                  style: TextStyle(
+                                                      color: Colors.red),
+                                                ),
+                                                onTap: () {
+                                                  showDialog(
+                                                      context: context,
+                                                      builder: (context) {
+                                                        return AlertDialog(
+                                                          title: const Text(
+                                                              'Eliminazione evento'),
+                                                          content: Text(
+                                                              'vuoi eliminare l\'evento:\n${event.name}?'),
+                                                          actions: [
+                                                            ElevatedButton(
+                                                              onPressed: () {
+                                                                ScaffoldMessenger.of(
+                                                                        context)
+                                                                    .showSnackBar(
+                                                                  const SnackBar(
+                                                                      backgroundColor:
+                                                                          Colors
+                                                                              .green,
+                                                                      content: Text(
+                                                                          'Evento eliminato')),
+                                                                );
+                                                                Navigator.pushReplacement(
+                                                                    context,
+                                                                    MaterialPageRoute(
+                                                                        builder:
+                                                                            (context) =>
+                                                                                const MyHomePage(title: 'Biketogether')));
+                                                                FirebaseDatabase
+                                                                    .instance
+                                                                    .ref(
+                                                                        'events/$eventID')
+                                                                    .remove();
+                                                              },
+                                                              child: const Text(
+                                                                  'Elimina',
+                                                                  style: TextStyle(
+                                                                      color: Colors
+                                                                          .white)),
+                                                              style: ButtonStyle(
+                                                                  backgroundColor:
+                                                                      MaterialStateProperty.all(
+                                                                          Colors
+                                                                              .redAccent)),
+                                                            )
+                                                          ],
+                                                        );
+                                                      });
+                                                },
+                                              ),
+
                                             ])
                               ],
                             )
@@ -232,6 +291,17 @@ class _EventPageState extends State<EventPage> {
                       //   'creato da ${event.creatorName} il ${event.createAt.toString().substring(0, 10)}',
                       //   style: const TextStyle(fontSize: 20),
                       // ),
+                      event.private?ElevatedButton(onPressed: (){
+                        Clipboard.setData(ClipboardData(text: event.passcode??'Errore codice evento'));
+                      }, child: Row(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text('Codice Evento: ${event.passcode}',textScaleFactor: 1.35,),
+                          ),
+                          Icon(Icons.copy)
+                        ],
+                      )):Container(),
                       const Padding(padding: EdgeInsets.only(bottom: 20.0)),
                       const Divider(),
                       FutureBuilder(

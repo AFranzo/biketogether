@@ -34,10 +34,12 @@ class _MyEventsPageState extends State<MyEventsPage> {
                   final allEvents = Map<String, dynamic>.from(
                       snapshot.data!.snapshot.value as Map);
                   cardList.addAll(allEvents.entries
-                      .where((element) => (element.value['partecipants']??{} as Map).containsKey(FirebaseAuth.instance.currentUser!.uid))
+                      .where((element) => (element.value['partecipants'] ??
+                              {} as Map)
+                          .containsKey(FirebaseAuth.instance.currentUser!.uid))
                       .map((e) {
                     final event =
-                    BikeEvent.fromDB(Map<String, dynamic>.from(e.value));
+                        BikeEvent.fromDB(Map<String, dynamic>.from(e.value));
                     return Card(
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(20)),
@@ -47,7 +49,14 @@ class _MyEventsPageState extends State<MyEventsPage> {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             ListTile(
-                              leading: const Icon(Icons.pedal_bike),
+                              leading: Badge(
+                                isLabelVisible: event.private,
+                                largeSize:24,
+                                alignment: Alignment.bottomRight,
+                                backgroundColor: Colors.grey.withOpacity(0.3),
+                                offset: Offset(10,13),
+                                label:Icon(Icons.lock_outline),
+                                  child: Icon(Icons.pedal_bike)),
                               title: Text(event.name),
                               onTap: () {
                                 Navigator.push(
@@ -62,22 +71,28 @@ class _MyEventsPageState extends State<MyEventsPage> {
                           ],
                         ));
                   }));
-                  if (cardList.isEmpty){
+                  if (cardList.isEmpty) {
                     return Center(
                       child: Column(
                         children: [
                           Text('Nessun evento a cui partecipti'),
-                          ElevatedButton(onPressed: (){
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => MyHomePage(title: 'Biketogether')) );
-                          }, child: Text('Homepage'))
+                          ElevatedButton(
+                              onPressed: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            MyHomePage(title: 'Biketogether')));
+                              },
+                              child: Text('Homepage'))
                         ],
                       ),
                     );
                   }
                   return Expanded(
                       child: ListView(
-                        children: cardList,
-                      ));
+                    children: cardList,
+                  ));
                 } else if (snapshot.hasError) {
                   return Center(
                       child: Text(
@@ -87,7 +102,7 @@ class _MyEventsPageState extends State<MyEventsPage> {
                 }
               },
               stream: // TODO vengono fetchati in modo ordinato ma non mappati nello stesso ordine, maybe utilize onChild...
-              FirebaseDatabase.instance.ref().child('events').onValue,
+                  FirebaseDatabase.instance.ref().child('events').onValue,
             ),
           ],
         ));

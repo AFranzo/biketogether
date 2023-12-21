@@ -135,7 +135,7 @@ class _GoogleSignInButtonState extends State<GoogleSignInButton> {
               context,
               MaterialPageRoute(
                 builder: (context) => MyHomePage(
-                  title: "biketogether",
+                  title: "Biketogether",
                 ),
               ),
             );

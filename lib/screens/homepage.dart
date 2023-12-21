@@ -6,6 +6,7 @@ import 'package:biketogether/screens/personalevents.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../main.dart';
 import 'login.dart';
@@ -23,12 +24,14 @@ class MyHomePage extends StatefulWidget {
   // always marked "final".
 
   final String title;
+
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
   String searchedEventname = '';
+  bool showOld = false;
 
   @override
   void initState() {}
@@ -49,30 +52,98 @@ class _MyHomePageState extends State<MyHomePage> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
+        title: const Text('Eventi pubblici'),
+      ),
+      floatingActionButton: FloatingActionButton(
+        child: const Icon(Icons.lock_open_outlined),
+        onPressed: () {
+          showDialog(
+              context: context,
+              builder: (context) => AlertDialog(
+                title: const Text('Codice Evento'),
+                content: TextField(
+                  inputFormatters: [
+                    LengthLimitingTextInputFormatter(5)
+                  ],
+                  decoration: const InputDecoration(
+                    hintText:'Inserisci il codice di 5 lettere'
+                  ),
+                  onSubmitted: (value) {
+                    FirebaseDatabase.instance
+                        .ref()
+                        .child('events')
+                        .orderByChild('passcode')
+                        .equalTo(value)
+                        .get()
+                        .then((value) {
+                      if (!value.exists) {
+                        Navigator.of(context).pop();
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                              backgroundColor: Colors.red,
+                              content: Text(
+                                  'Codice invalido')),
+                        );
+                      } else {
+                        try{
+                        FirebaseDatabase.instance
+                            .ref(
+                            'events/${value.children.first.key}/partecipants')
+                            .update({
+                          FirebaseAuth.instance.currentUser!.uid:
+                          DateTime.now().millisecondsSinceEpoch
+                        });
+                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                          backgroundColor: Colors.green,
+                          content: Text("Partecipazione effettuata"),
+                        ));
+
+                        ;} catch(e){
+                          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                            backgroundColor: Colors.redAccent,
+                            content: Text("Errore"),
+                          ));
+                        }
+                        Navigator.of(context).pop();
+                      }
+                    });
+                  },
+                ),
+              ));
+        },
       ),
       body: Column(
         children: [
-          const Text(
-            'Eventi Pubblici',style: TextStyle(
-              fontSize: 25,
-              fontWeight: FontWeight.bold
-          ),),
+          Padding(
+            padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  'Eventi passati',
+                  style: TextStyle(fontSize: 20),
+                ),
+                Switch(
+                    splashRadius: 30.0,
+                    value: showOld,
+                    onChanged: (value) => setState(() => showOld = value)),
+              ],
+            ),
+          ),
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: TextField(
                 decoration: const InputDecoration(
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                        width: 1, color: Colors.black45),
-                  ),
-                    labelText: 'Ricerca Evento', suffixIcon: Icon(Icons.search)),
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(width: 1, color: Colors.black45),
+                    ),
+                    labelText: 'Ricerca Evento',
+                    suffixIcon: Icon(Icons.search)),
                 onChanged: (e) {
                   searchedEventname = e;
                   setState(() {});
                 }),
           ),
-           // TODO fare lista apparte o sopra con eventi a cui sono già iscritto
           StreamBuilder(
             builder: (context, snapshot) {
               final cardList = <Card>[];
@@ -83,9 +154,16 @@ class _MyHomePageState extends State<MyHomePage> {
                 final allEvents = Map<String, dynamic>.from(
                     snapshot.data!.snapshot.value as Map);
                 cardList.addAll(allEvents.entries
-                    .where((element) => element.value['name']
-                        .toString().toLowerCase()
-                        .contains(searchedEventname.toLowerCase()))
+                    .where((element) =>
+                        element.value['name']
+                            .toString()
+                            .toLowerCase()
+                            .contains(searchedEventname.toLowerCase()) &&
+                        (!DateTime.fromMillisecondsSinceEpoch(
+                                    element.value['date'])
+                                .isBefore(DateTime.now()) ||
+                            showOld) &&
+                        !(element.value['private'] as bool))
                     .map((e) {
                   final event =
                       BikeEvent.fromDB(Map<String, dynamic>.from(e.value));
@@ -133,17 +211,39 @@ class _MyHomePageState extends State<MyHomePage> {
       drawer: Drawer(
         child: Column(
           children: [
+            AppBar(
+              backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+              title: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Image.asset(
+                    "assets/logo64pxn.png",
+                    height: 32,
+                    width: 32,
+                  ),
+                  const Padding(
+                    padding: EdgeInsets.only(right: 8.0),
+                  ),
+                  Text(widget.title),
+                ],
+              ),
+              automaticallyImplyLeading: false,
+            ),
             Expanded(
               child: ListView(
                 children: [
+                  const ListTile(
+                    leading: Icon(Icons.person),
+                    title: Text('Username'),
+                  ),
                   ListTile(
                     leading: const Icon(Icons.add_circle),
-                    title: const Text('Creata Evento'),
+                    title: const Text('Nuovo Evento'),
                     onTap: () {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => CreateEvent()));
+                              builder: (context) => const CreateEvent()));
                     },
                   ),
                   ListTile(
@@ -153,7 +253,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => MyEventsPage()));
+                              builder: (context) => const MyEventsPage()));
                     },
                   )
                 ],

@@ -8,6 +8,7 @@ import 'package:biketogether/screens/homepage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class EventPage extends StatefulWidget {
   const EventPage({super.key, required this.eventname});
@@ -34,7 +35,7 @@ class _EventPageState extends State<EventPage> {
         stream:
             FirebaseDatabase.instance.ref().child('events/$eventID').onValue,
         builder: (context, snapshot) {
-          if (snapshot.hasData) {
+          if (snapshot.hasData && snapshot.data!.snapshot.value != null) {
             final event = BikeEvent.fromDB(Map<String, dynamic>.from(
                 snapshot.data!.snapshot.value as Map));
             return Scaffold(
@@ -51,13 +52,13 @@ class _EventPageState extends State<EventPage> {
                               .contains(FirebaseAuth.instance.currentUser!.uid))
                           ? IconButton(
                               onPressed: () {
-                                FirebaseDatabase.instance
-                                    .ref('/events/$eventID/')
-                                    .child('partecipants')
-                                    .update({
-                                  FirebaseAuth.instance.currentUser!.uid:
-                                      DateTime.now().millisecondsSinceEpoch
-                                });
+                                  FirebaseDatabase.instance
+                                      .ref('/events/$eventID/')
+                                      .child('partecipants')
+                                      .update({
+                                    FirebaseAuth.instance.currentUser!.uid:
+                                        DateTime.now().millisecondsSinceEpoch
+                                  });
                               },
                               icon: const Icon(Icons.add))
                           : Row(
@@ -68,6 +69,7 @@ class _EventPageState extends State<EventPage> {
                                           context,
                                           MaterialPageRoute(
                                               builder: (context) =>
+
                                                   ChatPage(eventId: eventID, eventcreatorId: event.creatorId,)));
                                     },
                                     icon: const Icon(Icons.chat)),
@@ -79,8 +81,8 @@ class _EventPageState extends State<EventPage> {
                                               context: context,
                                               builder: (context) {
                                                 return AlertDialog(
-                                                  title:
-                                                      Text('Abbandona evento'),
+                                                  title: const Text(
+                                                      'Abbandona evento'),
                                                   content: Text(
                                                       'vuoi abbandonare l\'evento "${event.name}"?'),
                                                   actions: [
@@ -90,7 +92,8 @@ class _EventPageState extends State<EventPage> {
                                                             .instance
                                                             .ref()
                                                             .child(
-                                                                '/events/$eventID/partecipants/${FirebaseAuth.instance.currentUser!.uid}').remove();
+                                                                '/events/$eventID/partecipants/${FirebaseAuth.instance.currentUser!.uid}')
+                                                            .remove();
                                                         Navigator.of(context)
                                                             .pop();
                                                       },
@@ -114,7 +117,7 @@ class _EventPageState extends State<EventPage> {
                                     : PopupMenuButton(
                                         itemBuilder: (context) => [
                                               PopupMenuItem(
-                                                child: Text('Modifica'),
+                                                child: const Text('Modifica'),
                                                 onTap: () {
                                                   showDialog<void>(
                                                       context: context,
@@ -125,7 +128,11 @@ class _EventPageState extends State<EventPage> {
                                                               'Modifica Evento'),
                                                           content: Form(
                                                             key: _form,
-                                                            child:
+                                                            child: Column(
+                                                              mainAxisSize:
+                                                                  MainAxisSize
+                                                                      .min,
+                                                              children: [
                                                                 TextFormField(
                                                                     decoration: const InputDecoration(
                                                                         border:
@@ -150,6 +157,94 @@ class _EventPageState extends State<EventPage> {
                                                                           ifAbsent: () =>
                                                                               value);
                                                                     }),
+                                                                TextFormField(
+                                                                    decoration: const InputDecoration(
+                                                                        border:
+                                                                            UnderlineInputBorder(),
+                                                                        labelText:
+                                                                            'Descrizione dell\'evento'),
+                                                                    initialValue:
+                                                                        event
+                                                                            .description,
+                                                                    validator:
+                                                                        (value) {
+                                                                      formFields.update(
+                                                                          'event_description',
+                                                                          (e) =>
+                                                                              value,
+                                                                          ifAbsent: () =>
+                                                                              value);
+                                                                    }),
+                                                                TextField(
+                                                                  decoration:
+                                                                      const InputDecoration(
+                                                                    labelText:
+                                                                        'Data Evento',
+                                                                    filled:
+                                                                        true,
+                                                                    prefixIcon:
+                                                                        Icon(Icons
+                                                                            .calendar_today),
+                                                                    enabledBorder:
+                                                                        OutlineInputBorder(
+                                                                            borderSide:
+                                                                                BorderSide.none),
+                                                                    focusedBorder:
+                                                                        OutlineInputBorder(
+                                                                      borderSide:
+                                                                          BorderSide(
+                                                                              color: Colors.blue),
+                                                                    ),
+                                                                  ),
+                                                                  readOnly:
+                                                                      true,
+                                                                  onTap: () {
+                                                                    showDatePicker(
+                                                                        context:
+                                                                            context,
+                                                                        initialDate:
+                                                                            DateTime
+                                                                                .now(),
+                                                                        firstDate:
+                                                                            DateTime(
+                                                                                2000),
+                                                                        lastDate:
+                                                                            DateTime(2101)); // TODO: make it update the event date like in createevent
+                                                                  },
+                                                                ),
+                                                                TextField(
+                                                                  decoration:
+                                                                      const InputDecoration(
+                                                                    labelText:
+                                                                        'Orario Evento',
+                                                                    filled:
+                                                                        true,
+                                                                    prefixIcon:
+                                                                        Icon(Icons
+                                                                            .alarm),
+                                                                    enabledBorder:
+                                                                        OutlineInputBorder(
+                                                                            borderSide:
+                                                                                BorderSide.none),
+                                                                    focusedBorder:
+                                                                        OutlineInputBorder(
+                                                                      borderSide:
+                                                                          BorderSide(
+                                                                              color: Colors.blue),
+                                                                    ),
+                                                                  ),
+                                                                  readOnly:
+                                                                      true,
+                                                                  onTap: () {
+                                                                    showTimePicker(
+                                                                        context:
+                                                                            context,
+                                                                        initialTime:
+                                                                            TimeOfDay.now()); // TODO: make it update the event date like in createevent
+                                                                  },
+                                                                ),
+                                                              ],
+                                                            ),
                                                           ),
                                                           actions: [
                                                             ElevatedButton(
@@ -173,6 +268,63 @@ class _EventPageState extends State<EventPage> {
                                                       });
                                                 },
                                               ),
+                                              PopupMenuItem(
+                                                child: const Text(
+                                                  'Elimina',
+                                                  style: TextStyle(
+                                                      color: Colors.red),
+                                                ),
+                                                onTap: () {
+                                                  showDialog(
+                                                      context: context,
+                                                      builder: (context) {
+                                                        return AlertDialog(
+                                                          title: const Text(
+                                                              'Eliminazione evento'),
+                                                          content: Text(
+                                                              'vuoi eliminare l\'evento:\n${event.name}?'),
+                                                          actions: [
+                                                            ElevatedButton(
+                                                              onPressed: () {
+                                                                ScaffoldMessenger.of(
+                                                                        context)
+                                                                    .showSnackBar(
+                                                                  const SnackBar(
+                                                                      backgroundColor:
+                                                                          Colors
+                                                                              .green,
+                                                                      content: Text(
+                                                                          'Evento eliminato')),
+                                                                );
+                                                                Navigator.pushReplacement(
+                                                                    context,
+                                                                    MaterialPageRoute(
+                                                                        builder:
+                                                                            (context) =>
+                                                                                const MyHomePage(title: 'Biketogether')));
+                                                                FirebaseDatabase
+                                                                    .instance
+                                                                    .ref(
+                                                                        'events/$eventID')
+                                                                    .remove();
+                                                              },
+                                                              child: const Text(
+                                                                  'Elimina',
+                                                                  style: TextStyle(
+                                                                      color: Colors
+                                                                          .white)),
+                                                              style: ButtonStyle(
+                                                                  backgroundColor:
+                                                                      MaterialStateProperty.all(
+                                                                          Colors
+                                                                              .redAccent)),
+                                                            )
+                                                          ],
+                                                        );
+                                                      });
+                                                },
+                                              ),
+
                                             ])
                               ],
                             )
@@ -186,7 +338,7 @@ class _EventPageState extends State<EventPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Row(
                             children: [
@@ -232,6 +384,17 @@ class _EventPageState extends State<EventPage> {
                       //   'creato da ${event.creatorName} il ${event.createAt.toString().substring(0, 10)}',
                       //   style: const TextStyle(fontSize: 20),
                       // ),
+                      event.private?ElevatedButton(onPressed: (){
+                        Clipboard.setData(ClipboardData(text: event.passcode??'Errore codice evento'));
+                      }, child: Row(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text('Codice Evento: ${event.passcode}',textScaleFactor: 1.35,),
+                          ),
+                          Icon(Icons.copy)
+                        ],
+                      )):Container(),
                       const Padding(padding: EdgeInsets.only(bottom: 20.0)),
                       const Divider(),
                       FutureBuilder(

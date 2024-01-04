@@ -232,9 +232,11 @@ class _MyHomePageState extends State<MyHomePage> {
             Expanded(
               child: ListView(
                 children: [
-                  const ListTile(
-                    leading: Icon(Icons.person),
-                    title: Text('Username'),
+                  ListTile(
+                    leading: CircleAvatar(
+                      backgroundImage: NetworkImage(FirebaseAuth.instance.currentUser!.photoURL??''),
+                    ),
+                    title: Text(FirebaseAuth.instance.currentUser!.displayName??'Username'),
                   ),
                   ListTile(
                     leading: const Icon(Icons.add_circle),

@@ -23,7 +23,8 @@ class _EventPageState extends State<EventPage> {
   final String eventID;
   final _form = GlobalKey<FormState>();
   Map<String, dynamic> formFields = {};
-
+  final _dateController = TextEditingController();
+  final _timeController = TextEditingController();
   _EventPageState({required this.eventID});
 
   @override
@@ -38,6 +39,9 @@ class _EventPageState extends State<EventPage> {
           if (snapshot.hasData && snapshot.data!.snapshot.value != null) {
             final event = BikeEvent.fromDB(Map<String, dynamic>.from(
                 snapshot.data!.snapshot.value as Map));
+            _dateController.text=event.date.toString().substring(0,10);
+            formFields['date']=event.date;
+            _timeController.text='${event.date.hour}:${event.date.minute}';
             return Scaffold(
                 appBar: AppBar(
                   backgroundColor: Theme.of(context).colorScheme.inversePrimary,
@@ -176,6 +180,7 @@ class _EventPageState extends State<EventPage> {
                                                                               value);
                                                                     }),
                                                                 TextField(
+                                                                  controller: _dateController,
                                                                   decoration:
                                                                       const InputDecoration(
                                                                     labelText:
@@ -198,23 +203,30 @@ class _EventPageState extends State<EventPage> {
                                                                   ),
                                                                   readOnly:
                                                                       true,
-                                                                  onTap: () {
-                                                                    showDatePicker(
+                                                                  onTap: () async{
+                                                                   var pickedDate = await showDatePicker(
                                                                         context:
                                                                             context,
                                                                         initialDate:
-                                                                            DateTime
-                                                                                .now(),
+                                                                          event.date,
                                                                         firstDate:
                                                                             DateTime(
                                                                                 2000),
                                                                         lastDate:
-                                                                            DateTime(2101)); // TODO: make it update the event date like in createevent
+                                                                            DateTime(2101)
+
+                                                                   );
+                                                                   if (pickedDate != null){
+                                                                     formFields.update('date', (value) => pickedDate, ifAbsent: ()=>pickedDate);
+                                                                     _dateController.text=pickedDate.toString().substring(0,10);
+                                                                   }
                                                                   },
                                                                 ),
                                                                 TextField(
+                                                                  controller: _timeController,
                                                                   decoration:
                                                                       const InputDecoration(
+
                                                                     labelText:
                                                                         'Orario Evento',
                                                                     filled:
@@ -235,12 +247,21 @@ class _EventPageState extends State<EventPage> {
                                                                   ),
                                                                   readOnly:
                                                                       true,
-                                                                  onTap: () {
-                                                                    showTimePicker(
+                                                                  onTap: () async{
+                                                                    var pickedTime = await showTimePicker(
                                                                         context:
                                                                             context,
                                                                         initialTime:
-                                                                            TimeOfDay.now()); // TODO: make it update the event date like in createevent
+                                                                            TimeOfDay.now()
+
+                                                                    );
+                                                                    if (pickedTime != null){
+                                                                      formFields.update('date', (value) {
+                                                                        value as DateTime;
+                                                                        return DateTime(value.year,value.month,value.day,pickedTime.hour,pickedTime.minute);
+                                                                      },);
+                                                                      _timeController.text='${pickedTime.hour}:${pickedTime.minute}';
+                                                                    }
                                                                   },
                                                                 ),
                                                               ],
@@ -254,8 +275,11 @@ class _EventPageState extends State<EventPage> {
                                                                               .currentState!
                                                                               .validate())
                                                                             {
+
                                                                               FirebaseDatabase.instance.ref('/events/$eventID/').update({
-                                                                                'name': formFields['event_name']
+                                                                                'name': formFields['event_name'],
+                                                                                'description': formFields['event_description'],
+                                                                                'date': (formFields['date'] as DateTime).millisecondsSinceEpoch
                                                                               }),
                                                                               Navigator.of(context).pop()
                                                                             }

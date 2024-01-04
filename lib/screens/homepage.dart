@@ -203,7 +203,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 return const Center(child: CircularProgressIndicator());
               }
             },
-            stream: // TODO vengono fetchati in modo ordinato ma non mappati nello stesso ordine, maybe utilize onChild...
+            stream:
                 FirebaseDatabase.instance.ref().child('events').onValue,
           )
         ],

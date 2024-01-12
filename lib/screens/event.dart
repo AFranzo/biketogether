@@ -1,6 +1,7 @@
 /* Screen of the event page with join/leave, chat and event's info */
 // inb4 this might just be a stateless widget
 
+import 'package:url_launcher/url_launcher.dart';
 import 'package:biketogether/modules/bike_event.dart';
 import 'package:biketogether/modules/bike_route.dart';
 import 'package:biketogether/screens/chat.dart';
@@ -573,7 +574,9 @@ class _EventPageState extends State<EventPage> {
                                   ],
                                 ),
                                 ElevatedButton(
-                                  onPressed: () {},
+                                  onPressed: () async {
+                                    await launchUrl(route.link);
+                                  },
                                   child: const Row(
                                     children: [
                                       Text('Mappa percorso',

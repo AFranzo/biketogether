@@ -39,7 +39,7 @@ class BikeRoute {
         difficulty:data['difficulty'],
         duration:   double.parse(data['duration'].toString()),
         lenght: int.parse(data['lenght'].toString()),
-        link:Uri(path: data['link']),
+        link:Uri.parse(data['link']),
         name: data['name'],
         pointArrival:data['pointArrival'],
         pointStart:data['pointStart'],

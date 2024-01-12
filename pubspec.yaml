@@ -39,6 +39,7 @@ dependencies:
   firebase_auth: ^4.12.1
   google_sign_in: ^6.1.6
   animated_text_kit: ^4.2.2
+  url_launcher: ^6.2.3
 
 dev_dependencies:
   flutter_test:

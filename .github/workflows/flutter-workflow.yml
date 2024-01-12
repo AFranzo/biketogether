@@ -36,6 +36,9 @@ jobs:
           alias: ${{ secrets.KEY_ALIAS }}
           keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
           keyPassword: ${{ secrets.KEY_PASSWORD }}
+        env:
+          # temporary fix because original actions is outdated using ubuntu-latest https://github.com/r0adkll/sign-android-release/pull/85
+          BUILD_TOOLS_VERSION: "31.0.0"
       # uploads the apk as an artifact so it can be retrieved next
       - uses: actions/upload-artifact@v1
         with:

@@ -8,7 +8,6 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import '../main.dart';
 import 'login.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -34,8 +33,15 @@ class _MyHomePageState extends State<MyHomePage> {
   bool showOld = false;
 
   @override
-  void initState() {}
+  void initState() {
+    super.initState();
+  }
 
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+  }
   @override
   Widget build(BuildContext context) {
     // This method is rerun every time setState is called, for instance as done
@@ -98,7 +104,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           content: Text("Partecipazione effettuata"),
                         ));
 
-                        ;} catch(e){
+                        } catch(e){
                           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                             backgroundColor: Colors.redAccent,
                             content: Text("Errore"),
@@ -263,21 +269,91 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             Align(
               alignment: Alignment.bottomCenter,
-              child: ListTile(
+              child: Column(children : [ListTile(
+                leading: const Icon(Icons.delete_forever),
+                title: const Text('Cancella i miei dati'),
+                onTap: () => showDialog<String>(
+                  context: context,
+                  builder: (BuildContext context) => AlertDialog(
+                    title: const Text('Cancella i miei dati'),
+                    content: const Text("Sei sicuro di voler cancellare i dati?\nL'operazione non sarà reversibile"),
+                    actions: <Widget>[
+                      Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                      TextButton(
+                        style: TextButton.styleFrom(
+                          foregroundColor: Colors.pink,
+                        ),
+                      onPressed: () =>
+                        Navigator.pop(context, 'OK'),
+
+              child: const Text('Indietro'),
+            ),
+                            TextButton(
+                              style: TextButton.styleFrom(
+                                foregroundColor: Colors.green,
+                              ),
+                              onPressed: () async {
+                                var dbRef = FirebaseDatabase.instance.ref().child('events').get();
+                                dbRef.then((value){
+                                for(var e in value.children){
+                                //print('${e.child("creatorId").value}+ok');
+                                  if(e.child("creatorId").value == FirebaseAuth.instance.currentUser?.uid){
+                                    e.ref.remove();
+                                  }else{
+                                    e.child("partecipants").children.forEach((element) {
+                                    //print("-----");
+                                    //print(element.key);
+                                    if(FirebaseAuth.instance.currentUser?.uid == element.key) {
+                                      //print(FirebaseAuth.instance.currentUser!.uid);
+                                      //print(element.key);
+                                      //print("removed from");
+                                      element.ref.remove();
+                                    }});
+                                  }
+                                }}).then((value) async {
+                                  FirebaseAuth.instance.currentUser?.reload();
+                                  await FirebaseAuth.instance.currentUser?.delete();
+
+                                }).then((value){
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => const SignInPage()));
+                                });
+
+                              },
+                              child: const Text('Confermo'),
+                            )
+                          ],),
+
+
+                    ],
+                  ),
+                ),
+
+              ),ListTile(
                 leading: const Icon(Icons.logout),
                 title: const Text('Logout'),
                 onTap: () async {
-                  await Authentication.signOut(context: context);
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const SignInPage()));
+                  await Authentication.signOut(context: context).then((value){
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const SignInPage()));
+                  });
                 },
+              ),
+              ],
               ),
             )
           ],
         ),
       ),
     );
+
+
+
   }
 }

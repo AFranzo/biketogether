@@ -54,9 +54,9 @@ class _MyEventsPageState extends State<MyEventsPage> {
                                 largeSize:24,
                                 alignment: Alignment.bottomRight,
                                 backgroundColor: Colors.grey.withOpacity(0.3),
-                                offset: Offset(10,13),
-                                label:Icon(Icons.lock_outline),
-                                  child: Icon(Icons.pedal_bike)),
+                                offset: const Offset(10,13),
+                                label:const Icon(Icons.lock_outline),
+                                  child: const Icon(Icons.pedal_bike)),
                               title: Text(event.name),
                               onTap: () {
                                 Navigator.push(
@@ -75,16 +75,16 @@ class _MyEventsPageState extends State<MyEventsPage> {
                     return Center(
                       child: Column(
                         children: [
-                          Text('Nessun evento a cui partecipti'),
+                          const Text('Nessun evento a cui partecipti'),
                           ElevatedButton(
                               onPressed: () {
                                 Navigator.push(
                                     context,
                                     MaterialPageRoute(
                                         builder: (context) =>
-                                            MyHomePage(title: 'Biketogether')));
+                                            const MyHomePage(title: 'Biketogether')));
                               },
-                              child: Text('Homepage'))
+                              child: const Text('Homepage'))
                         ],
                       ),
                     );

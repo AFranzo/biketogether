@@ -317,6 +317,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
                                 }}).then((value) async {
                                   FirebaseAuth.instance.currentUser?.reload();
+                                  await Authentication.signOut(context: context);
                                   await FirebaseAuth.instance.currentUser?.delete();
 
                                 }).then((value){

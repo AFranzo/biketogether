@@ -295,23 +295,26 @@ class _MyHomePageState extends State<MyHomePage> {
                                 foregroundColor: Colors.green,
                               ),
                               onPressed: () async {
+                                var currUser=FirebaseAuth.instance.currentUser?.uid;
                                 var dbRef = FirebaseDatabase.instance.ref().child('events').get();
                                 dbRef.then((value){
                                 for(var e in value.children){
-                                //print('${e.child("creatorId").value}+ok');
-                                  if(e.child("creatorId").value == FirebaseAuth.instance.currentUser?.uid){
+                                // removes events created by user
+                                  if(e.child("creatorId").value ==currUser ){
                                     e.ref.remove();
-                                  }else{
+                                  }else{ // removes from participants
                                     e.child("partecipants").children.forEach((element) {
-                                    //print("-----");
-                                    //print(element.key);
-                                    if(FirebaseAuth.instance.currentUser?.uid == element.key) {
-                                      //print(FirebaseAuth.instance.currentUser!.uid);
-                                      //print(element.key);
-                                      //print("removed from");
+                                    if(currUser == element.key) {
                                       element.ref.remove();
                                     }});
                                   }
+                                  // removes messages sent by the user in all chats
+                                  e.child("chat").children.forEach((msg) {
+                                    if (msg.child('creatorUid').value == currUser){
+                                      msg.ref.remove();
+                                    }
+                                  });
+
                                 }}).then((value) async {
                                   FirebaseAuth.instance.currentUser?.reload();
                                   await FirebaseAuth.instance.currentUser?.delete();
